@@ -15,6 +15,7 @@ It will have a '!' red overlay if you exceeded your limit, but could still buy e
 It will have a '!!' red overlay if you exceeded your limit, and even if you buy all the extra transfer packages you can (90GB at this time), you'll still be charged extra.
 
 Clicking the toolbar button will display a popup window with more details:
+
 * when your billing month started;
 * the amount of upload and download you made thus far, this month;
 * a graph of you current usage versus your allowed usage;
@@ -35,8 +36,8 @@ The source of that server-side script can be found in videotron_usage.php in thi
 How to use?
 -----------
 
-Install the extension from https://chrome.google.com/webstore/detail/fnhepcakkcnkaehfhpagimbbkpelkdha
+Install the extension from the [Google Chrome WebStore](https://chrome.google.com/webstore/detail/fnhepcakkcnkaehfhpagimbbkpelkdha)
 
-Then go in the [options](chrome-extension://dciknklnejapoffpcogkipjiomdillcc/options.html), enter your Videotron Internet (VL) username, and choose your Internet plan.
+Then go in the options (right-click the taskbar button and choose Options), enter your Videotron Internet (VL) username, and choose your Internet plan.
 
 Don't know your VL username? You can find it on your monthly invoice, just above the Internet daily usage numbers. You can also find it in your Videotron Customer Centre, on the [Manage e-mail accounts](https://www.videotron.com/client/Customer-Centre/Internet/Email-services) page.
