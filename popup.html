@@ -12,7 +12,7 @@ $(document).ready(function() {
 });
 
 function translate() {
-	$('#needs_config').html(t("needs_config"));
+	$('#needs_config').html(tt("needs_config", chrome.extension.getURL('options.html')));
 	$('#loading').html(t("loading_please_wait"));
 	$('#ohnoes').html(tt("oh_noes_error", ""));
 	$('#this_month_intro').html(t("this_month"));
@@ -25,11 +25,7 @@ function translate() {
 <body>
 	<div id="front">
 		<div id="loading">Loading... Please wait.</div>
-		<div id="needs_config" class="title">
-			Configuration needed...<br/>
-			Please enter your Vid&eacute;otron username<br/>
-			in the widget's preferences.
-		</div>
+		<div id="needs_config" class="title"></div>
 		<div id="ohnoes" style="display:none">Oh Noes! There's been an error.</div>
 
 		<div id="this_month" style="display:none">

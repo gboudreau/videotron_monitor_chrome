@@ -7,7 +7,8 @@
 	"title_image": { "message": "Images/background_fr.png" },
 	"loading_please_wait": { "message": "Chargement... Un instant SVP. $IMG$",
 		"placeholders": { "img": { "content": "<img src='Images/loader.gif' class='loader' width='16' height='16' valign='middle' />" } } },
-	"needs_config": { "message": "Configuration requise...<br/>Veuillez entrer votre nom d'usager Vidéotron<br/>dans les options." },
+	"needs_config": { "message": "Configuration requise...<br/>Veuillez entrer votre nom d'usager Vidéotron<br/>dans les <a href='$URL$' target='_blank'>options</a>.",
+		"placeholders": { "url": { "content": "$1" } } },
 	"oh_noes_error": { "message": "Oh Noes! Une erreur s'est produite.<br/>$DETAILED_ERROR$",
 		"placeholders": { "detailed_error": { "content": "$1" } } },
 
