@@ -1,0 +1,419 @@
+<html>
+<head>
+<script type="text/javascript" src="jquery-1.4.2.min.js"></script>
+<script type="text/javascript" src="scripts.js" charset="utf-8"></script>
+<script type="text/javascript">
+
+var xml_request_2 = null;
+var plans = new Array();
+var transferPackages = new Array();
+var load_plans_error = null;
+var maxTransferPackages = 0;
+
+var username = '';
+
+var defaultPlanId = 19; // Default selected plan (High-Speed 50GB)
+var planId = defaultPlanId;
+var selectedPlan = null;
+var dataTransferPackagesBought = 0;
+var dataTransferPackagesBoughtWhen = null;
+
+// From selectedPlan
+var limitTotal = 50;
+var surchargePerGb = 4.50;
+var surchargeLimit = 50;
+
+var xml_request = null;
+var last_updated = 0;
+var date_last_updated_data = new Date(); date_last_updated_data.setTime(0);
+var currentTransfer = null;
+var load_usage_error = null;
+
+var last_notification;
+
+$(document).ready(function() {
+    reloadPrefs();
+	loadPlans();
+});
+
+function reloadPrefs() {
+	planId = localStorage['planId'];
+	dataTransferPackagesBought = localStorage["dataTransferPackagesBought"];
+	if (dataTransferPackagesBought) {
+	    dataTransferPackagesBought = parseInt(dataTransferPackagesBought);
+	}
+	dataTransferPackagesBoughtWhen = localStorage["dataTransferPackagesBoughtWhen"];
+	if (dataTransferPackagesBoughtWhen) {
+		dataTransferPackagesBoughtWhen = new Date(Date.parse(dataTransferPackagesBoughtWhen));
+	}
+	username = localStorage["username"];
+	lang = localStorage["lang"];
+	if (!lang || lang.length == 0) {
+		lang = 'en';
+	}
+}
+
+function loadPlans() {
+	if (plans.length == 0) {
+		if (xml_request_2 != null) {
+			xml_request_2.abort();
+			xml_request_2 = null;
+		}
+		xml_request_2 = new XMLHttpRequest();
+		xml_request_2.onload = function(e) { loadPlans2(e, xml_request_2); }
+		xml_request_2.overrideMimeType("text/xml");
+		xml_request_2.open("GET", "http://dataproxy.pommepause.com/videotron_usage-11.php?get_plans=1");
+		xml_request_2.setRequestHeader("Cache-Control", "no-cache");
+		xml_request_2.send(null);
+	}
+}
+
+function loadPlans2(e, request) {
+	if (typeof planId == 'undefined' || planId.length == 0 || planId < 0) {
+		limitTotal = localStorage["limitTotal"];
+		if (!limitTotal || limitTotal.length == 0) {
+			planId = defaultPlanId;
+		} else {
+    		limitTotal = parseInt(limitTotal);
+			for (var i=0; i<plans.length; i++) {
+				if (limitTotal == plans[i].limit_gb) {
+					planId = i;
+					localStorage['planId'] = planId;
+					break;
+				}
+			}
+		}
+	}
+	if (e != null) {
+		xml_request_2 = null;
+		if (!request.responseXML) {
+		    load_plans_error = tt("oh_noes_error", "Response is not XML.");
+			last_updated = 0;
+			return;
+		} else {
+			// Get the top level <plans> element 
+			var plansXml = findChild(request.responseXML, 'plans');
+			if (!plansXml) {
+    		    load_plans_error = tt("oh_noes_error", "No 'plans' tag in response.");
+				last_updated = 0;
+				return;
+			}
+			
+			load_plans_error = null;
+			
+			for (var item = plansXml.firstChild; item != null; item = item.nextSibling) {
+				if (item.nodeName == 'plan') {
+					var id = item.attributes.getNamedItem('id').value;
+					var name = findChild(item, 'name');
+					var limit_gb = findChild(item, 'limit_gb');
+					var surcharge_per_gb = findChild(item, 'surcharge_per_gb');
+					var surcharge_limit = findChild(item, 'surcharge_limit');
+					var p = new Object();
+					p.id = id;
+					p.name = name.firstChild.data;
+					p.limit_gb = limit_gb.firstChild.data;
+					p.surcharge_per_gb = surcharge_per_gb.firstChild.data;
+					if (surcharge_limit.firstChild) {
+						p.surcharge_limit = surcharge_limit.firstChild.data;
+					} else {
+						p.surcharge_limit = 999999;
+					}
+					if (planId == p.id) {
+						selectedPlan = p;
+						limitTotal = parseInt(p.limit_gb);
+						
+					}
+					plans.push(p);
+				}
+				if (item.nodeName == 'data_transfer_pkg') {
+					var amount = parseInt(findChild(item, 'amount').firstChild.data);
+					transferPackages.push(amount);
+					if (amount > maxTransferPackages) {
+					    maxTransferPackages = amount;
+					}
+				}
+			}
+			
+        	loadUsage();
+		}
+	}
+}
+
+function loadUsage() {
+	var n = new Date();
+	var now = n.getTime();
+
+	var minute = 60*1000;
+	var hour = 60*minute;
+	var day = 24*hour;
+
+	// only refresh if it's been more than 6h since the last update, or if the data for the day before yesterday hasn't been downloaded yet.
+	var lu = new Date(); lu.setTime(last_updated);
+	if (last_updated == 0) {
+    	console.log("Chrome restarted, or new install. Updating data...");
+	} else {
+    	console.log("Now: " + now);
+    	console.log("Last Updated: " + last_updated);
+    	if ((now - last_updated) <= 6*hour) {
+        	console.log("Won't update: data is only refreshed every 6 hours.");
+    	}
+    	if ((((now - date_last_updated_data.getTime()) > 2*day) && (now - last_updated) > 15*minute)) {
+    	    console.log("Oh, oh! Wait... The latest data is more than 2 days old... Let's retry every 15 minutes until it works then.");
+    	}
+	}
+	if ((now - last_updated) > 6*hour || (((now - date_last_updated_data.getTime()) > 2*day) && (now - last_updated) > 15*minute)) {
+		if (xml_request != null) {
+			xml_request.abort();
+			xml_request = null;
+		}
+		xml_request = new XMLHttpRequest();
+		xml_request.onload = function(e) { loadUsage2(e, xml_request); }
+		xml_request.overrideMimeType("text/xml");
+		xml_request.open("GET", "http://dataproxy.pommepause.com/videotron_usage-11.php?"+username);
+		xml_request.setRequestHeader("Cache-Control", "no-cache");
+		xml_request.send(null);
+    }
+
+	// Repeat every 20 minutes; will only refresh with the server every 6h anyway
+	setTimeout(loadUsage, 20*minute);
+}
+
+function loadUsage2(e, request) {
+	xml_request = null;
+	if (!request.responseXML) {
+	    load_usage_error = tt("oh_noes_error", "Response is not XML.");
+		last_updated = 0;
+		return;
+	} else {
+		// Get the top level <usage> element 
+		var usage = findChild(request.responseXML, 'usage');
+		if (!usage) {
+    	    load_usage_error = tt("oh_noes_error", "No usage tag in response.");
+			last_updated = 0;
+			return;
+		}
+
+		var error = findChild(usage, 'error');
+		if (error) {
+    	    load_usage_error = error.firstChild.data;
+			last_updated = 0;
+			return;
+		}
+		
+		load_usage_error = null;
+
+		var transferPeriods = new Array;
+		var transferDays = new Array;
+
+		// Get all transfer elements subordinate to the usage element
+		for (var item = usage.firstChild; item != null; item = item.nextSibling) {
+			if (item.nodeName == 'transfer') {
+				var date = findChild(item, 'date');
+				var down = findChild(item, 'download');
+				var up = findChild(item, 'upload');
+				if (date != null && down != null && up != null) {
+					var date_from = findChild(date, 'from');
+					var date_to = findChild(date, 'to');
+					if (date_from != null && date_to != null) {
+						transferPeriods[transferPeriods.length] = {
+							date_from: new Date(Date.parse(date_from.firstChild.data)),
+							date_to: new Date(Date.parse(date_to.firstChild.data)),
+							download: down.firstChild.data,
+							download_units: down.attributes.getNamedItem('unit').value,
+							upload: up.firstChild.data,
+							upload_units: up.attributes.getNamedItem('unit').value
+						};
+					} else {
+						transferDays[transferDays.length] = {
+							date: new Date(Date.parse(date.firstChild.data)),
+							download: down.firstChild.data,
+							download_units: down.attributes.getNamedItem('unit').value,
+							upload: up.firstChild.data,
+							upload_units: up.attributes.getNamedItem('unit').value
+						};
+					}
+				}
+			}
+		}
+		
+		if (!dataTransferPackagesBoughtWhen || dataTransferPackagesBoughtWhen <= transferPeriods[0]['date_from']) {
+			dataTransferPackagesBought = 0;
+			localStorage['dataTransferPackagesBought'] = dataTransferPackagesBought;
+		}
+
+		currentTransfer = transferPeriods[0];
+
+		date_last_updated_data = currentTransfer['date_to'];
+		var this_month_start = currentTransfer['date_from'];
+		var next_month_start = new Date(this_month_start); next_month_start.setMonth(next_month_start.getMonth()+1);
+		var now = currentTransfer['date_to'];
+		now.setDate(now.getDate()+1);
+		if (now.getTime() > next_month_start.getTime()) {
+			now = next_month_start;
+		}
+
+		down = numberFormatGB(currentTransfer['download'], currentTransfer['download_units']);
+		up = numberFormatGB(currentTransfer['upload'], currentTransfer['upload_units']);
+		
+		// Now data
+		var nowPercentage = (now.getTime()-this_month_start.getTime())/(next_month_start.getTime()-this_month_start.getTime());
+		var nowBandwidth = parseFloat((nowPercentage*(limitTotal+dataTransferPackagesBought)-down-up).toFixed(2));
+		var n = (down+up) * 100.0 / (limitTotal+dataTransferPackagesBought);
+		var limitPercentage = n.toFixed(0);
+		
+		console.log("Got new usage data from server...");
+		console.log("Down+Up = " + (down+up));
+		
+		// 'Today is the $num_days day of your billing month.'
+		var num_days = (now.getTime()-this_month_start.getTime())/(24*60*60*1000);
+		num_days = parseInt(num_days.toFixed(0));
+		switch (num_days) {
+		    case 1: num_days = t('1st'); break;
+		    case 2: num_days = t('2nd'); break;
+		    case 3: num_days = t('3rd'); break;
+		    case 21: num_days = t('21st'); break;
+		    case 22: num_days = t('22nd'); break;
+		    case 23: num_days = t('23rd'); break;
+		    case 31: num_days = t('31st'); break;
+		    default: num_days = num_days + t('th');
+		}
+		var endOfMonthBandwidth = (down+up) / nowPercentage;
+
+		if (limitPercentage > 100) {
+		    // 'Current extra charges: $overLimit'
+			var overLimit = ((down+up) - (limitTotal+dataTransferPackagesBought)) * surchargePerGb;
+			if (overLimit > surchargeLimit) {
+				overLimit = surchargeLimit;
+			}
+
+            // 'Extra charges with $maxTransferPackages of transfer packages (the maximum): $hypotetic_overLimit.'
+			var hypoteticOverLimit = ((down+up) - (limitTotal+maxTransferPackages)) * surchargePerGb;
+			if (hypoteticOverLimit > surchargeLimit) {
+				hypoteticOverLimit = surchargeLimit;
+			} else if (hypoteticOverLimit < 0) {
+			    // 'To get no extra charges, you'd need to buy another $extraPackages of extra transfer packages.'
+			    for (var i=0; i<transferPackages.length; i++) {
+			        if ((down+up) - (limitTotal+transferPackages[i]) < 0) {
+			            extraPackages = transferPackages[i] - dataTransferPackagesBought;
+			            break;
+			        }
+			    }
+			}
+        }
+        
+        var badgeDetails = {text: ''};
+        var badgeColorDetails = {color: [200, 100, 100, 255]}; // Dark red
+        var titleDetails = {title: t('Videotron Internet Usage Monitor')};
+        var current_notification;
+		if (down+up > limitTotal+maxTransferPackages) {
+		    // You're doomed!
+    		var badgeDetails = {text: '!!'};
+            var titleDetails = {title: t("over_limit_too_much_tooltip")};
+
+            var text = tt('used_and_quota', [(down+up).toFixed(0), limitTotal]) + tt('current_extra', overLimit.toFixed(0));
+            if (dataTransferPackagesBought < maxTransferPackages) {
+                text += tt('too_late', [maxTransferPackages, hypoteticOverLimit.toFixed(0)]);
+            }
+            current_notification = {title: t('over_limit_too_much_notif_title'), text: text};
+		} else if (down+up > limitTotal+dataTransferPackagesBought) {
+		    // All is not lost... Buy transfer packages!
+    		var badgeDetails = {text: '!'};
+            var titleDetails = {title: t('over_limit_tooltip')};
+
+            var text = tt('used_and_quota', [(down+up).toFixed(0), limitTotal]) + tt('current_extra', overLimit.toFixed(0)) + tt('over_limit_tip', extraPackages.toString());
+            current_notification = {title: t('over_limit_notif_title'), text: text};
+		} else if (nowBandwidth < 0) {
+		    // Not on a good path!
+    		var badgeDetails = {text: '!'};
+    		var badgeColorDetails = {color: [255, 204, 51, 255]}; // Yellow orangish
+            var titleDetails = {title: t('expected_over_limit_tooltip')};
+
+            var text = tt('used_and_quota', [(down+up).toFixed(0), limitTotal]) + tt('expected_over_limit_tip', [num_days, endOfMonthBandwidth.toFixed(0)]);
+            current_notification = {title: t('expected_over_limit_notif_title'), text: text};
+		} else {
+    		var badgeDetails = {text: '+'};
+    		var badgeColorDetails = {color: [0, 153, 0, 255]}; // Green
+		    var titleDetails = {title: t('all_is_well')};
+		}
+		
+		chrome.browserAction.setBadgeText(badgeDetails);
+		chrome.browserAction.setBadgeBackgroundColor(badgeColorDetails);
+		chrome.browserAction.setTitle(titleDetails);
+		
+        if (current_notification && (!last_notification || current_notification.title != last_notification.title)) {
+    		// Show notification
+			var notification = webkitNotifications.createNotification(
+                'Images/icon-64.png',
+                current_notification.title,
+                current_notification.text
+			);
+			notification.show();
+        }
+
+		last_notification = current_notification;
+
+		// set last_updated to the current time to keep track of the last time a request was posted
+		last_updated = (new Date).getTime();
+	}
+}
+
+var units = new Array("B","KB","MB","GB");
+function numberFormatGB(number, unit) {
+	var go = false;
+	for (var i = 0, len = units.length; i < len; i++) {
+		if (go) {
+			number = number / 1024;
+		}
+		if (units[i] == unit) {
+			go = true;
+		}
+	}
+	return number;
+}
+
+function findChild(element, nodeName) {
+	var child = null;
+	for (child = element.firstChild; child != null; child = child.nextSibling) {
+		if (child.nodeName == nodeName) {
+			break;
+		}
+	}
+	return child;
+}
+
+/**
+* Handles data sent via chrome.extension.sendRequest().
+* @param request Object Data sent in the request.
+* @param sender Object Origin of the request.
+* @param sendResponse Function The method to call when the request completes.
+*/
+function onRequest(request, sender, sendResponse) {
+	switch(request.action) {
+		case 'getPlans':
+			sendResponse({plans: plans, selectedPlan: selectedPlan, transferPackages: transferPackages, dataTransferPackagesBought: dataTransferPackagesBought, load_plans_error: load_plans_error});
+			return;
+		case 'getUsage':
+			sendResponse({currentTransfer: currentTransfer, dataTransferPackagesBought: dataTransferPackagesBought, load_usage_error: load_usage_error});
+			return;
+		case 'setSelectedPlan':
+		    selectedPlan = request.selectedPlan;
+		    dataTransferPackagesBought = request.dataTransferPackagesBought;
+        	limitTotal = parseInt(selectedPlan.limit_gb);
+        	surchargePerGb = parseFloat(selectedPlan.surcharge_per_gb);
+        	surchargeLimit = parseFloat(selectedPlan.surcharge_limit);
+        	last_updated = 0;
+        	reloadPrefs();
+        	loadUsage();
+		    return;
+	}
+	sendResponse({});
+	return;
+};
+
+// Wire up the listener.
+chrome.extension.onRequest.addListener(onRequest);
+
+</script>
+</head>
+<body></body>
+</html>

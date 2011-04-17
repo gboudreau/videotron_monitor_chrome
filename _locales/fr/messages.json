@@ -1,0 +1,70 @@
+
+
+{
+	"title": { "message": "Concommation Internet Videotron" },
+	"description" : { "message": "Clients Vidéotron: Garder un oeil sur votre consommation Internet." },
+
+	"title_image": { "message": "Images/background_fr.png" },
+	"loading_please_wait": { "message": "Chargement... Un instant SVP. $IMG$",
+		"placeholders": { "img": { "content": "<img src='Images/loader.gif' class='loader' width='16' height='16' valign='middle' />" } } },
+	"needs_config": { "message": "Configuration requise...<br/>Veuillez entrer votre nom d'usager Vidéotron<br/>dans les options." },
+	"oh_noes_error": { "message": "Oh Noes! Une erreur s'est produite.<br/>$DETAILED_ERROR$",
+		"placeholders": { "detailed_error": { "content": "$1" } } },
+
+	"videotron_username": { "message": "Nom d'usager Vidéotron*" },
+	"type_of_access": { "message": "Contrat" },
+	"data_transfer_packages": { "message": "Blocs de consommation supp. achetés ce mois-ci" },
+	"colored_upload": { "message": "Transfert en amont différent sur le graph" },
+	"save": { "message": "Sauvegarder" },
+	"options_saved": { "message": "Options sauvegardées." },
+	"where_to_find_vl_username": { "message": "* Vous ne connaissez pas votre nom d'usager VL ? Vous pouvez le trouver sur votre facture mensuelle, juste au-dessus des statistiques d'utilisation journalières d'Internet. Vous pouvez aussi le trouver dans l'Espace Client Vidéotron, sur la page <a href='https://www.videotron.com/client/secur/ServicesCourriel.do' target='_blank'>Gérer mes comptes courriels</a>."},
+
+	"download": { "message": "Aval" },
+	"upload": { "message": "Amont" },
+	"download_and_upload": { "message": "Aval + Amont" },
+	"GB": { "message": "Go" },
+	"this_month": { "message": "Ce mois-ci" },
+	"started": { "message": "commencé" },
+	"last_updated": { "message": "Dernière màj" },
+
+	"accumulated_daily_surplus": { "message": "Surplus journalier accumulé: <span class='nowbw $POS_NEG$'>$NOW_BANDWIDTH$ Go</span>.$INSTRUCTIONS$",
+		"placeholders": { "pos_neg": { "content": "$1" }, "now_bandwidth": { "content": "$2" }, "instructions": { "content": "$3" } } },
+	"download_more": { "message": "Laissez-vous aller!" },
+	"slow_down": { "message": "Ralentissez un peu!" },
+	"over_limit_get_packages": { "message": "Limite dépassée! Achetez des blocs de consommation supplémentaires, ou vous serez facturé $SURCHARGE$$$ extra ce mois-ci.",
+		"placeholders": { "surcharge": { "content": "$1" } } },
+
+	"over_limit_too_much_tooltip": { "message": "Limite dépassée! Vous serez facturé pour l'extra." },
+	"over_limit_too_much_notif_title": { "message": "Limite dépassée (vous devrez payer!)" },
+	"used_and_quota": { "message": "Vous avez transféré $BW_USED$Go ce mois-ci, alors que votre limite est de $QUOTA$Go. ",
+		"placeholders": { "bw_used": { "content": "$1" }, "quota": { "content": "$2" } } },
+	"current_extra": { "message": "Surcharge courante: $OVERLIMIT$$$. ",
+		"placeholders": { "overlimit": { "content": "$1" } } },
+	"too_late": { "message": "Même en achetant $MAXTRANSFERPACKAGES$Go de blocs de consommation supplémentaires (le maximum), vous serez quand même facturé une surcharge de $HYPOTETIC_OVERLIMIT$$$.",
+		"placeholders": { "maxtransferpackages": { "content": "$1" }, "hypotetic_overlimit": { "content": "$2" } } },
+
+	"over_limit_tooltip": { "message": "Limite dépassée! Vous devrez probablement payer une surcharge." },
+	"over_limit_notif_title": { "message": "Limite dépassée" },
+	"over_limit_tip": { "message": "Pour ne pas être facturé pour cet extra, vous devrez acheter un $EXTRAPACKAGES$Go de blocs de consommation supplémentaires.",
+		"placeholders": { "extrapackages": { "content": "$1" } } },
+
+	"expected_over_limit_tooltip": { "message": "À ce rythme, vous aurez dépassé votre limite à la fin du mois." },
+	"expected_over_limit_notif_title": { "message": "Limite en voie d'être dépassée" },
+	"expected_over_limit_tip": { "message": "Aujourd'hui est le $NUM_DAYS$ jour de votre mois de facturation. À ce rythme, vous aurez transféré $ENDOFMONTHBANDWIDTH$Go à la fin du mois.",
+		"placeholders": { "num_days": { "content": "$1" }, "endofmonthbandwidth": { "content": "$2" } } },
+
+	"all_is_well": { "message": "Tout va bien. Vous pouvez télécharger d'avantage." },
+
+	"1st": { "message": "1er" },
+	"2nd": { "message": "2e" },
+	"3rd": { "message": "3e" },
+	"21st": { "message": "21e" },
+	"22nd": { "message": "22e" },
+	"23rd": { "message": "23e" },
+	"31st": { "message": "31e" },
+	"th": { "message": "e" },
+
+	"this_month_percentage_1_pos_total": { "message": "262px" },
+	"this_month_percentage_1_pos_diff": { "message": "309px" },
+	"this_month_percentage_2_pos_diff": { "message": "298px" }
+}

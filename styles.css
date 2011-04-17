@@ -1,0 +1,123 @@
+body {
+	font: 10px "Lucida Grande";
+}
+
+div {
+	margin-left: 8px;
+}
+
+#this_month {
+	font: 12px "Lucida Grande";
+}
+
+.title {
+	font-weight: bold;
+}
+
+.dates {
+	font-weight: normal;
+}
+
+#this_month_bandwidth {
+	position: absolute;
+	bottom: 34px;
+	left: 9px;
+}
+
+#last_updated {
+	position: absolute;
+	bottom: 7px;
+	left: 15px;
+}
+
+input {
+	text-align: center;
+}
+
+#doneButton {
+	position: absolute;
+	top: 117px;
+	right: 10px;
+}
+#doneButton div {
+	margin-left: 0;
+}
+
+#front {
+	background: url(__MSG_title_image__) no-repeat top left;
+	width: 408px;
+	height: 130px;
+	padding-top: 55px;
+}
+
+#limitTypeDiv, #limitTotalDiv, #limitDifferentDiv {
+	margin-top: 8px;
+}
+
+.inputText {
+	width: 390px;
+	text-align: right;
+}
+
+#needs_config, #loading {
+	display: none;
+	position: relative;
+	text-align: center;
+	top: 30px;
+	left: -10px;
+}
+
+#this_month_meter_2 {
+	position: relative;
+	top: -7px;
+}
+
+.meter_start {
+	background-color: #F0F;
+	position: relative;
+	display: block;
+	height: 10px;
+	top: -11px;
+	z-index: 9;
+}
+
+.meter_end {
+	background-color: #FFFFFF;
+	position: relative;
+	display: block;
+	height: 10px;
+	top: -21px;
+	z-index: 9;
+}
+
+.meter_text {
+	font: 10px "Lucida Grande";
+	color: #000000;
+	position: relative;
+	top: -34px;
+	left: 2px;
+	z-index: 10;
+}
+
+.meter_percentage {
+	top: -34px;
+	z-index: 11;
+}
+
+.loader {
+	margin-bottom: 4px;
+}
+
+#this_month .title, #this_month #this_month_down, #this_month_bandwidth #this_month_now_bw_usage {
+	margin-left: 8px;
+}
+
+span.nowbw {
+	font-weight: bold;
+}
+span.nowbw.pos {
+	color: #01B200;
+}
+span.nowbw.neg {
+	color: #FF0900;
+}

@@ -1,0 +1,68 @@
+{
+	"title": { "message": "Videotron Internet Usage Monitor" },
+	"description" : { "message": "Monitor your monthly Videotron Internet quota." },
+
+	"title_image": { "message": "Images/background_en.png" },
+	"loading_please_wait": { "message": "Loading... Please wait. $IMG$",
+		"placeholders": { "img": { "content": "<img src='Images/loader.gif' class='loader' width='16' height='16' valign='middle' />" } } },
+	"needs_config": { "message": "Configuration needed...<br/>Please enter your Videotron username<br/>in the options." },
+	"oh_noes_error": { "message": "Oh Noes! There's been an error.<br/>$DETAILED_ERROR$",
+		"placeholders": { "detailed_error": { "content": "$1" } } },
+
+	"videotron_username": { "message": "Videotron Username*" },
+	"type_of_access": { "message": "Contract" },
+	"data_transfer_packages": { "message": "Extra data transfer packages bought this month" },
+	"colored_upload": { "message": "Colored Upload" },
+	"save": { "message": "Save" },
+	"options_saved": { "message": "Options Saved." },
+	"where_to_find_vl_username": { "message": "* Don't know your VL username? You can find it on your monthly invoice, just above the Internet daily usage numbers. You can also find it in your Videotron Customer Center, on the <a href='https://www.videotron.com/client/Customer-Centre/Internet/Email-services' target='_blank'>Manage e-mail accounts</a> page."},
+
+	"download": { "message": "Download" },
+	"upload": { "message": "Upload" },
+	"download_and_upload": { "message": "Download + Upload" },
+	"GB": { "message": "GB" },
+	"this_month": { "message": "This month" },
+	"started": { "message": "started" },
+	"last_updated": { "message": "Last updated" },
+	
+	"accumulated_daily_surplus": { "message": "Accumulated daily surplus: <span class='nowbw $POS_NEG$'>$NOW_BANDWIDTH$ GB</span>.$INSTRUCTIONS$",
+		"placeholders": { "pos_neg": { "content": "$1" }, "now_bandwidth": { "content": "$2" }, "instructions": { "content": "$3" } } },
+	"download_more": { "message": "Download more stuff!" },
+	"slow_down": { "message": "Slow down buddy!" },
+	"over_limit_get_packages": { "message": "Over-limit! Buy extra data transfer packages, or you'll be charged $SURCHARGE$$$ extra this month.",
+		"placeholders": { "surcharge": { "content": "$1" } } },
+
+	"over_limit_too_much_tooltip": { "message": "Over-limit! You'll pay extra this month." },
+	"over_limit_too_much_notif_title": { "message": "Over-limit (no going back now)" },
+	"used_and_quota": { "message": "You have transfered $BW_USED$GB this month, of your $QUOTA$GB quota. ",
+		"placeholders": { "bw_used": { "content": "$1" }, "quota": { "content": "$2" } } },
+	"current_extra": { "message": "Current extra charges: $OVERLIMIT$$$. ",
+		"placeholders": { "overlimit": { "content": "$1" } } },
+	"too_late": { "message": "Even with $MAXTRANSFERPACKAGES$GB of transfer packages (the maximum), you'll still be charged $HYPOTETIC_OVERLIMIT$$$.",
+		"placeholders": { "maxtransferpackages": { "content": "$1" }, "hypotetic_overlimit": { "content": "$2" } } },
+
+	"over_limit_tooltip": { "message": "Over-limit! You'll probably pay extra this month." },
+	"over_limit_notif_title": { "message": "Over-limit" },
+	"over_limit_tip": { "message": "To get no extra charges, you'd need to buy another $EXTRAPACKAGES$GB of extra transfer packages.",
+		"placeholders": { "extrapackages": { "content": "$1" } } },
+
+	"expected_over_limit_tooltip": { "message": "At this rate, you'll be over limit at the end of the month." },
+	"expected_over_limit_notif_title": { "message": "Expected Over-limit" },
+	"expected_over_limit_tip": { "message": "Today is the $NUM_DAYS$ day of your billing month. At this rate, you'll be at $ENDOFMONTHBANDWIDTH$GB at the end of the month.",
+		"placeholders": { "num_days": { "content": "$1" }, "endofmonthbandwidth": { "content": "$2" } } },
+
+	"all_is_well": { "message": "All is well. You can download more." },
+
+	"1st": { "message": "1st" },
+	"2nd": { "message": "2nd" },
+	"3rd": { "message": "3rd" },
+	"21st": { "message": "21st" },
+	"22nd": { "message": "22nd" },
+	"23rd": { "message": "23rd" },
+	"31st": { "message": "31st" },
+	"th": { "message": "th" },
+	
+	"this_month_percentage_1_pos_total": { "message": "231px" },
+	"this_month_percentage_1_pos_diff": { "message": "280px" },
+	"this_month_percentage_2_pos_diff": { "message": "294px" }
+}
