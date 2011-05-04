@@ -26,18 +26,15 @@ Desktop Notifications will appear if you either are over-limit, or on your way t
 
 How it works?
 -------------
-Every 6 hours, the extension sends an HTTP request to http://dataproxy.pommepause.com/videotron_usage-#.php?vlxxxxxx
-where vlxxxxxx is your Videotron Internet username.
+Every 6 hours, the extension sends an HTTP request to the Videotron Public API.
 
-This videotron_usage-#.php server-side script will use the specified username to load the Videotron Internet Usage page for that user, and parse it to extract the usage data, and return that in XML format to the extension, which will in turn parse it, and update it's numbers.
-
-The source of that server-side script can be found in videotron_usage.php in this repository.
+This API has been developed by Videotron to provide to third-party developers the data necessary to display bandwidth usage for Videotron customers.
 
 How to use?
 -----------
 
 Install the extension from the [Google Chrome WebStore](https://chrome.google.com/webstore/detail/fnhepcakkcnkaehfhpagimbbkpelkdha)
 
-Then go in the options (right-click the taskbar button and choose Options), enter your Videotron Internet (VL) username, and choose your Internet plan.
+Then go in the options (right-click the taskbar button and choose Options), enter your Videotron User Key.
 
-Don't know your VL username? You can find it on your monthly invoice, just above the Internet daily usage numbers. You can also find it in your Videotron Customer Centre, on the [Manage e-mail accounts](https://www.videotron.com/client/Customer-Centre/Internet/Email-services) page.
+Don't know your Videotron User Key? You can find it in your Videotron Customer Center, in the [User Key] (https://www.videotron.com/client/user-management/secur/InitProfile.do?dispatch=initProfile&tab=token&lang=en&caller=videotron-chrome.pommepause.com) tab of the Your Profile page.

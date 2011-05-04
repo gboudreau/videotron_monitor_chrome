@@ -16,9 +16,9 @@ $(document).ready(function() {
 
 // Restores select box state to saved value from localStorage.
 function restore_options() {
-    var username = localStorage["username"];
-  	if (username && username.length > 0) {
-		$('#username').val(username);
+    var userkey = localStorage["userkey"];
+  	if (userkey && userkey.length > 0) {
+		$('#userkey').val(userkey);
 	}
 
     var color_code_upload = localStorage['colorCodeUpload'] == 'true';
@@ -28,32 +28,15 @@ function restore_options() {
 	    $("#color_code_upload")[0].checked = false;
 	}
 
-	chrome.extension.sendRequest({action : 'getPlans'}, function(response) {
-        plans = response.plans;
-		var transferPackages = response.transferPackages;
-		var selectedPlan = response.selectedPlan;
-		var dataTransferPackagesBought = response.dataTransferPackagesBought;
-
-		for (var i=0; i<plans.length; i++) {
-    		$('#plan')[0].options[i] = new Option(t(plans[i].name) + ' (' + plans[i].limit_gb + t('GB') + ')', plans[i].id, i == 0, selectedPlan.id == plans[i].id);
-		}
-
-		for (var i=0; i<transferPackages.length; i++) {
-			$('#transfer_packages')[0].options[i] = new Option(transferPackages[i] + ' ' + t('GB'), transferPackages[i], i==0, dataTransferPackagesBought == transferPackages[i]);
-		}
-
-		translate();
-    });
+	translate();
 }
 
 function translate() {
-	$('#username_intro').html(t("videotron_username"));
-	$('#plan_intro').html(t("type_of_access"));
-	$('#transfer_packages_intro').html(t("data_transfer_packages"));
+	$('#userkey_intro').html(t("videotron_userkey"));
 	$('#upload_color_intro').html(t("colored_upload"));
 	$('#title_image').attr('src', t("title_image"));
 	$('#save').html(t("save"));
-	$('#where_to_find_vl_username').html(t("where_to_find_vl_username"));
+	$('#where_to_find_user_key').html(t("where_to_find_user_key"));
 }
 </script>
 </head>
@@ -64,28 +47,10 @@ function translate() {
 <table cellspacing="0" cellpadding="0">
 	<tr>
 	    <td class="inputText">
-			<span id="username_intro">Vid&eacute;otron Username</span>:
+			<span id="userkey_intro">Vid&eacute;otron User Key</span>:
 		</td>
 		<td>
-		    <input type="text" id="username" value="vlxxxxxx" size="10" maxlength="8" onclick="if (this.value == 'vlxxxxxx') { this.value = ''; }" />
-		</td>
-	</tr>
-
-	<tr>
-	    <td class="inputText">
-			<span id="plan_intro">Type of access</span>:
-		</td>
-		<td>
-		    <select id="plan"></select>
-		</td>
-	</tr>
-
-	<tr>
-	    <td class="inputText">
-			<span id="transfer_packages_intro">Data transfer packages</span>:
-		</td>
-		<td>
-		    <select id="transfer_packages"></select>
+		    <input type="text" id="userkey" placeholder="1234567890ABCDEF" size="16" maxlength="16" />
 		</td>
 	</tr>
 
@@ -107,7 +72,7 @@ function translate() {
 </div>
 
 <br/>
-<div id="where_to_find_vl_username" style="width: 400px; left: 200px; position: absolute"></div>
+<div id="where_to_find_user_key" style="width: 400px; left: 200px; position: absolute"></div>
 
 </body>
 </html>

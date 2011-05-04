@@ -1,54 +1,22 @@
 // Local
-var lang = 'en';
 var color_code_upload = false;
-
-// From background.html
-var plans;
-var transferPackages;
-var selectedPlan;
-var dataTransferPackagesBought = 0;
-var load_plans_error;
 
 // From selectedPlan
 var limitTotal = 50;
 var surchargePerGb = 4.50;
 var surchargeLimit = 50;
+var maxTransferPackages = 90;
 
 function reloadPrefs() {
-	lang = localStorage["lang"];
-	if (!lang || lang.length == 0) {
-		lang = 'en';
-	}
-
 	color_code_upload = localStorage["colorCodeUpload"] == 'true';
 }
 
 function savePrefs() {
-	planId = $("#plan")[0].options[$("#plan")[0].selectedIndex].value;
-	selectedPlan = plans[$("#plan")[0].selectedIndex];
-	dataTransferPackagesBought = parseInt($("#transfer_packages").val());
-
 	// save preferences
-	localStorage['planId'] = planId;
-	localStorage['dataTransferPackagesBought'] = dataTransferPackagesBought;
-	if (dataTransferPackagesBought > 0) {
-		dataTransferPackagesBoughtWhen = new Date();
-		localStorage['dataTransferPackagesBoughtWhen'] = dataTransferPackagesBoughtWhen.toString();
-	} else {
-		dataTransferPackagesBoughtWhen = null;
-		localStorage.removeItem('dataTransferPackagesBoughtWhen');
-	}
-	localStorage['username'] = $("#username").val() == 'vlxxxxxx' ? '' : $("#username").val();
-	localStorage['lang'] = $("#lang").val();
+	localStorage['userkey'] = $("#userkey").val();
 	localStorage['colorCodeUpload'] = $("#color_code_upload")[0].checked;
 	
-	limitTotal = parseInt(selectedPlan.limit_gb);
-	surchargePerGb = parseFloat(selectedPlan.surcharge_per_gb);
-	surchargeLimit = parseFloat(selectedPlan.surcharge_limit);
-
-	reloadPrefs();
-
-	chrome.extension.sendRequest({action : 'setSelectedPlan', selectedPlan: selectedPlan, dataTransferPackagesBought: dataTransferPackagesBought}, function(response) {});
+	chrome.extension.sendRequest({action : 'loadUsage'}, function() {});
 
     // Update status to let user know options were saved.
     $("#status").html(t("options_saved"));
@@ -58,14 +26,27 @@ function savePrefs() {
 function show() {
 	reloadPrefs();
 	
-	chrome.extension.sendRequest({action : 'getPlans'}, function(response) {
-        plans = response.plans;
-		transferPackages = response.transferPackages;
-		selectedPlan = response.selectedPlan;
-		load_plans_error = response.load_plans_error;
-		
-		if (load_plans_error) {
-			$('#ohnoes').html(t(load_plans_error));
+	var userkey = localStorage['userkey'];
+	if (!userkey || userkey == null || userkey.length == 0) {
+    	console.log(userkey)
+		$('#loading').css('display', 'none');
+		$('#needs_config').css('display', 'block');
+		return;
+	}
+
+	$("#ohnoes").css('display', "none");
+	$('#needs_config').css('display', 'none');
+	if ($('#this_month').css('display') == 'none') {
+		$('#loading').css('top', '30px');
+		$('#loading').css('display', 'block');
+	} else {
+		$('#this_month_loader').css('display', 'inline');
+		$('#this_month_meter_1').css('marginTop', '-5px');
+	}
+
+	chrome.extension.sendRequest({action : 'getUsage'}, function(response) {
+		if (response.load_usage_error) {
+			$('#ohnoes').html(t(response.load_usage_error));
 			$("#ohnoes").css('display', "block");
 			$("#loading").css('display', "none");
 			$('#this_month_loader').css('display', "none");
@@ -76,109 +57,114 @@ function show() {
 			setTimeout(show, 30000);
 			return;
 		}
+		
+		response = response.response;
 
-		if (plans == null) {
+		if (response == null) {
 			setTimeout(show, 2000);
 			return;
 		}
 
-		limitTotal = parseInt(selectedPlan.limit_gb);
-		surchargePerGb = parseFloat(selectedPlan.surcharge_per_gb);
-		surchargeLimit = parseFloat(selectedPlan.surcharge_limit);
-
-		translate(); // Maybe language changed; need to re-translate strings if so.
-
-		var username = localStorage['username'];
-		if (!username || username == null || username.length == 0) {
-			$('#loading').css('display', 'none');
-			$('#needs_config').css('display', 'block');
-			return;
-		}
-
+		limitTotal = parseInt(response.maxCombinedBytes/1024/1024/1024);
+		surchargeLimit = response.surchargeLimit;
+		surchargePerGb = response.surchargePerGb;
+		
 		$("#ohnoes").css('display', "none");
+
+		$("#loading").css('display', "none");
+		$('#this_month_loader').css('display', "none");
+		$('#this_month_meter_1').css('marginTop', '');
+		$("#last_updated").css('display', "block");
 		$('#needs_config').css('display', 'none');
-		if ($('#this_month').css('display') == 'none') {
-			$('#loading').css('top', '30px');
-			$('#loading').css('display', 'block');
+
+		$('#this_month_start').html('('+t('started')+' '+dateFormat(response.periodStartDate)+')');
+		var last_updated_date = new Date(response.usageTimestamp);
+		$('#this_month_end').html(dateFormat(last_updated_date, true));
+
+		var this_month_start = new Date(response.periodStartDate);
+		var next_month_start = new Date(response.periodEndDate); next_month_start.setDate(next_month_start.getDate()+1);
+		var now = new Date(response.usageTimestamp);
+
+		down = numberFormatGB(response.downloadedBytes, 'B');
+		up = numberFormatGB(response.uploadedBytes, 'B');
+		
+		$('#this_month_down').html((down < 1 ? '0' : '') + down.toFixed(2) + ' ' + t("GB"));
+		$('#this_month_up').html((up < 1 ? '0' : '') + up.toFixed(2) + ' ' + t("GB"));
+		$('#this_month_total').html((down + up < 1 ? '0' : '') + (down + up).toFixed(2) + ' ' + t("GB"));
+
+		$('#this_month').css('display', "block");
+
+		checkLimits(down, up);
+
+		// Now bar(s)
+		var nowPercentage = (now.getTime()-this_month_start.getTime())/(next_month_start.getTime()-this_month_start.getTime());
+		var metersWidth = 361;
+		var nowPos = parseInt((nowPercentage*metersWidth).toFixed(0));
+		if (nowPos > (metersWidth)) { nowPos = metersWidth; }
+		$('#this_month_now_1').css('left', (29+nowPos)+'px');
+		var nowBandwidth = parseFloat((nowPercentage*limitTotal-down-up).toFixed(2));
+
+		if (parseInt($('#this_month_meter_1_end').css('left').replace('px','')) <= 1+parseInt(nowPos)) {
+			$('#this_month_now_1_img')[0].src = 'Images/now.gif';
 		} else {
-			$('#this_month_loader').css('display', 'inline');
-			$('#this_month_meter_1').css('marginTop', '-5px');
+			$('#this_month_now_1_img')[0].src = 'Images/now_nok.gif';
 		}
+		$('#this_month_bandwidth').css('display', "");
 
-		chrome.extension.sendRequest({action : 'getUsage'}, function(response) {
-			var currentTransfer = response.currentTransfer;
-			var dataTransferPackagesBought = response.dataTransferPackagesBought;
-			
-			if (response.load_usage_error) {
-				$('#ohnoes').html(t(response.load_usage_error));
-				$("#ohnoes").css('display', "block");
-				$("#loading").css('display', "none");
-				$('#this_month_loader').css('display', "none");
-				$('#this_month_meter_1').css('marginTop', '');
-				$('#this_month').css('display', "none");
-				$('#this_month_bandwidth').css('display', "none");
-				$("#last_updated").css('display', "none");
-				setTimeout(show, 30000);
-				return;
-			}
+    	// Now data
+    	var n = (down+up) * 100.0 / limitTotal;
+    	var limitPercentage = n.toFixed(0);
 
-			if (currentTransfer == null) {
-				setTimeout(show, 2000);
-				return;
-			}
+    	// 'Today is the $num_days day of your billing month.'
+    	var num_days = (now.getTime()-this_month_start.getTime())/(24*60*60*1000);
+    	num_days = parseInt(num_days.toFixed(0));
+    	switch (num_days) {
+    	    case 1: num_days = t('1st'); break;
+    	    case 2: num_days = t('2nd'); break;
+    	    case 3: num_days = t('3rd'); break;
+    	    case 21: num_days = t('21st'); break;
+    	    case 22: num_days = t('22nd'); break;
+    	    case 23: num_days = t('23rd'); break;
+    	    case 31: num_days = t('31st'); break;
+    	    default: num_days = num_days + t('th');
+    	}
+    	var endOfMonthBandwidth = (down+up) / nowPercentage;
 
-			$("#ohnoes").css('display', "none");
+    	if (limitPercentage > 100) {
+    	    // 'Current extra charges: $overLimit'
+    		var overLimit = ((down+up) - limitTotal) * surchargePerGb;
+    		if (overLimit > surchargeLimit) {
+    			overLimit = surchargeLimit;
+    		}
 
-			$("#loading").css('display', "none");
-			$('#this_month_loader').css('display', "none");
-			$('#this_month_meter_1').css('marginTop', '');
-			$("#last_updated").css('display', "block");
-			$('#needs_config').css('display', 'none');
+            // 'Extra charges with $maxTransferPackages of transfer packages (the maximum): $hypotetic_overLimit.'
+    		var hypoteticOverLimit = ((down+up) - (limitTotal+maxTransferPackages)) * surchargePerGb;
+    		if (hypoteticOverLimit > surchargeLimit) {
+    			hypoteticOverLimit = surchargeLimit;
+    		} else if (hypoteticOverLimit < 0) {
+    		    // 'To get no extra charges, you'd need to buy another $extraPackages of extra transfer packages.'
+    		    for (var i=0; i<transferPackages.length; i++) {
+    		        if ((down+up) - (limitTotal+transferPackages[i]) < 0) {
+    		            extraPackages = transferPackages[i];
+    		            break;
+    		        }
+    		    }
+    		}
+        }
 
-			$('#this_month_start').html('('+t('started')+' '+dateFormat(currentTransfer['date_from'])+')');
-			var last_updated_date = new Date(currentTransfer['date_to']);
-			last_updated_date.setDate(last_updated_date.getDate()-1);
-			$('#this_month_end').html(dateFormat(last_updated_date));
-
-			var this_month_start = new Date(currentTransfer['date_from']);
-			var next_month_start = new Date(this_month_start); next_month_start.setMonth(next_month_start.getMonth()+1);
-			var now = new Date(currentTransfer['date_to']);
-
-			down = numberFormatGB(currentTransfer['download'], currentTransfer['download_units']);
-			up = numberFormatGB(currentTransfer['upload'], currentTransfer['upload_units']);
-			
-			$('#this_month_down').html((down < 1 ? '0' : '') + down.toFixed(2) + ' ' + t("GB"));
-			$('#this_month_up').html((up < 1 ? '0' : '') + up.toFixed(2) + ' ' + t("GB"));
-			$('#this_month_total').html((down + up < 1 ? '0' : '') + (down + up).toFixed(2) + ' ' + t("GB"));
-
-			$('#this_month').css('display', "block");
-
-			checkLimits(down, up);
-
-			// Now bar(s)
-			var nowPercentage = (now.getTime()-this_month_start.getTime())/(next_month_start.getTime()-this_month_start.getTime());
-			var metersWidth = 361;
-			var nowPos = parseInt((nowPercentage*metersWidth).toFixed(0));
-			if (nowPos > (metersWidth)) { nowPos = metersWidth; }
-			$('#this_month_now_1').css('left', (29+nowPos)+'px');
-			var nowBandwidth = parseFloat((nowPercentage*(limitTotal+dataTransferPackagesBought)-down-up).toFixed(2));
-
-			if (parseInt($('#this_month_meter_1_end').css('left').replace('px','')) <= 1+parseInt(nowPos)) {
-				$('#this_month_now_1_img')[0].src = 'Images/now.gif';
-			} else {
-				$('#this_month_now_1_img')[0].src = 'Images/now_nok.gif';
-			}
-			$('#this_month_bandwidth').css('display', "");
-			if (getLimitPercentage(down+up, limitTotal+dataTransferPackagesBought) > 100) {
-				var overLimit = ((down+up) - (limitTotal+dataTransferPackagesBought)) * surchargePerGb;
-				if (overLimit > surchargeLimit) {
-					overLimit = surchargeLimit;
-				}
-				$('#this_month_now_bw_usage').html('<span class="nowbw neg">' + tt('over_limit_get_packages', overLimit.toFixed(0)) + '</span>');
-			} else {
-				$('#this_month_now_bw_usage').html(tt('accumulated_daily_surplus', [nowBandwidth > 0 ? 'pos' : 'neg', nowBandwidth, (nowPercentage < 1 ? (nowBandwidth > 0 ? t("download_more") : t("slow_down")) : '')]));
-			}
-	    });
+    	if (down+up > limitTotal+maxTransferPackages) {
+    	    // You're doomed!
+            var text = '<span class="nowbw neg">' + tt('used_and_quota', [(down+up).toFixed(0), limitTotal]) + tt('current_extra', overLimit.toFixed(0)) + '</span>';
+    	} else if (down+up > limitTotal) {
+    	    // All is not lost... Buy transfer packages!
+            var text = '<span class="nowbw neg">' + tt('used_and_quota', [(down+up).toFixed(0), limitTotal]) + tt('current_extra', overLimit.toFixed(0)) + tt('over_limit_tip', extraPackages.toString()) + '</span>';
+    	} else if (nowBandwidth < 0) {
+    	    // Not on a good path!
+            var text = '<span class="nowbw neg">' + tt('used_and_quota', [(down+up).toFixed(0), limitTotal]) + tt('expected_over_limit_tip', [num_days, endOfMonthBandwidth.toFixed(0)]) + '</span>';
+    	} else {
+			var text = tt('accumulated_daily_surplus', [pos, nowBandwidth, (nowPercentage < 1 ? t("download_more") : '')]);
+    	}
+    	$('#this_month_now_bw_usage').html(text);
     });
 }
 
@@ -187,7 +173,7 @@ function checkLimits(currentDown, currentUp) {
 
 	// Numbers colors
 	$('#this_month_total').css('fontWeight', 'bold');
-	$('#this_month_total').css('color', getLimitColor(currentDown+currentUp, limitTotal+dataTransferPackagesBought));
+	$('#this_month_total').css('color', getLimitColor(currentDown+currentUp, limitTotal));
 	$('#this_month_down').css('fontWeight', 'normal');
 	$('#this_month_up').css('fontWeight', 'normal');
 	$('#this_month_down').css('color', "#000000");
@@ -196,13 +182,13 @@ function checkLimits(currentDown, currentUp) {
 	// Meters
 	var metersWidth = 360;
 	$('#this_month_meter_1_text').html(t('download_and_upload'));
-	var x = (getLimitPercentage(currentDown+currentUp, limitTotal+dataTransferPackagesBought)*metersWidth/100.0 + 1).toFixed(0);
+	var x = (getLimitPercentage(currentDown+currentUp, limitTotal)*metersWidth/100.0 + 1).toFixed(0);
 	if (x > (metersWidth+1)) { x = (metersWidth+1); }
 	$('#this_month_meter_1_end').css('width', ((metersWidth+1)-x) + 'px');
 	$('#this_month_meter_1_end').css('left', x + 'px');
 
 	if (color_code_upload) {
-		x = (getLimitPercentage(currentUp, limitTotal+dataTransferPackagesBought)*metersWidth/100.0 + 1).toFixed(0);
+		x = (getLimitPercentage(currentUp, limitTotal)*metersWidth/100.0 + 1).toFixed(0);
 		$('#this_month_meter_1_start').css('width', x + 'px');
 		$('#this_month_meter_1_start').css('left', '1px');
 	} else {
@@ -211,7 +197,7 @@ function checkLimits(currentDown, currentUp) {
 
 	// Percentage
 	$('#this_month_percentage_1').css('left', t('this_month_percentage_1_pos_total'));
-	$('#this_month_percentage_1').html(getLimitPercentage(currentDown+currentUp, limitTotal+dataTransferPackagesBought)+'%');
+	$('#this_month_percentage_1').html(getLimitPercentage(currentDown+currentUp, limitTotal)+'%');
 }
 
 function getLimitPercentage(number, limit) {
@@ -232,11 +218,14 @@ function getLimitColor(number, limit) {
 	return color;
 }
 
-function dateFormat(d) {
+function dateFormat(d, include_time) {
+    if (typeof include_time == 'undefined') {
+        include_time = false;
+    }
 	if (typeof d == 'string') {
 		d = new Date(d);
 	}
-	return d.getFullYear()+'-'+(d.getMonth()+1 < 10 ? '0'+(d.getMonth()+1) : (d.getMonth()+1))+'-'+(d.getDate() < 10 ? '0'+d.getDate() : d.getDate());
+	return d.getFullYear()+'-'+(d.getMonth()+1 < 10 ? '0'+(d.getMonth()+1) : (d.getMonth()+1))+'-'+(d.getDate() < 10 ? '0'+d.getDate() : d.getDate()) + (include_time ? (' ' + d.getHours() + ':' + d.getMinutes()) : '');
 }
 
 var units = new Array("B","KB","MB","GB");
