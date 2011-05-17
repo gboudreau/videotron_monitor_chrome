@@ -17,7 +17,7 @@
 	"colored_upload": { "message": "Transfert en amont différent sur le graph" },
 	"save": { "message": "Sauvegarder" },
 	"options_saved": { "message": "Options sauvegardées." },
-	"where_to_find_user_key": { "message": "* Vous ne connaissez pas votre Clé Utilisateur Vidéotron ? Vous pouvez la trouver dans l'Espace Client Vidéotron, dans l'onglet <a href='https://www.videotron.com/client/user-management/secur/InitProfile.do?dispatch=initProfile&tab=token&lang=fr&caller=videotron-chrome.pommepause.com' target='_blank'>Clé Utilisateur</a> de la page <em>Votre Profile</em>."},
+	"where_to_find_user_key": { "message": "* Vous ne connaissez pas votre Clé Utilisateur Vidéotron ? Vous pouvez la trouver dans l'Espace Client Vidéotron, dans l'onglet <a href='https://www.videotron.com/client/user-management/secur/InitProfile.do?dispatch=initProfile&onglet=3&userTokenTab=broccoli&lang=fr&caller=videotron-chrome.pommepause.com' target='_blank'>Clé Utilisateur</a> de la page <em>Votre Profile</em>."},
 
 	"download": { "message": "Aval" },
 	"upload": { "message": "Amont" },
