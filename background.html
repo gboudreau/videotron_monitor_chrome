@@ -72,7 +72,7 @@ function loadUsage() {
 		}
 		xml_request = new XMLHttpRequest();
 		xml_request.onload = function(e) { loadUsage2(e, xml_request); }
-		xml_request.open("GET", "https://www.videotron.com/api/1.0/internet/usage/wired/"+userkey+".json?lang=en&caller=videotron-chrome.pommepause.com");
+		xml_request.open("GET", "https://www.videotron.com/api/1.0/internet/usage/wired/"+userkey+".json?lang="+lang+"&caller=videotron-chrome.pommepause.com");
 		xml_request.setRequestHeader("Cache-Control", "no-cache");
 		xml_request.send(null);
     }
@@ -113,14 +113,21 @@ function loadUsage2(e, request) {
 	response.downloadedBytes = apiResponse.internetAccounts[0].downloadedBytes;
 	
 	response.packageName = apiResponse.internetAccounts[0].packageName;
+	response.packageCode = apiResponse.internetAccounts[0].packageCode;
 	
 	// @TODO Waiting for the API to report those...
-	if (response.packageName == 'High-Speed Internet' || response.packageName == 'Basic Internet') {
-	    surchargeLimit = 50;
-	    surchargePerGb = 4.50;
+    surchargeLimit = 99999;
+    surchargePerGb = 1.50;
+	if (response.packageCode) {
+    	if (response.packageCode == 500 || response.packageCode == 521 || response.packageCode == 518 || response.packageCode == 544 || response.packageCode == 1177 || response.packageCode == 1178) {
+    	    surchargeLimit = 50;
+    	    surchargePerGb = 4.50;
+    	}
 	} else {
-	    surchargeLimit = 99999;
-	    surchargePerGb = 1.50;
+    	if (response.packageName == 'High-Speed Internet' || response.packageName == 'Basic Internet' || response.packageName == 'Internet haute vitesse' || response.packageName == 'Internet haute vitesse') {
+    	    surchargeLimit = 50;
+    	    surchargePerGb = 4.50;
+    	}
 	}
 	response.surchargeLimit = surchargeLimit
 	response.surchargePerGb = surchargePerGb;
