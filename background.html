@@ -150,7 +150,7 @@ function loadUsage2(e, request) {
 	console.log(response);
 	
 	// 'Today is the $num_days day of your billing month.'
-	var num_days = (now.getTime()-this_month_start.getTime())/(24*60*60*1000);
+	var num_days = Math.floor((now.getTime()-this_month_start.getTime())/(24*60*60*1000))+1;
 	num_days = parseInt(num_days.toFixed(0));
 	switch (num_days) {
 	    case 1: num_days = t('1st'); break;

@@ -104,7 +104,11 @@ function show() {
 		$('#this_month_now_1').css('left', (29+nowPos)+'px');
 		var nowBandwidth = parseFloat((nowPercentage*limitTotal-down-up).toFixed(2));
 
-		if (parseInt($('#this_month_meter_1_end').css('left').replace('px','')) <= 1+parseInt(nowPos)) {
+    	// 'Today is the $num_days day of your billing month.'
+    	var num_days = Math.floor((now.getTime()-this_month_start.getTime())/(24*60*60*1000))+1;
+    	num_days = parseInt(num_days.toFixed(0));
+
+		if (parseInt($('#this_month_meter_1_end').css('left').replace('px','')) <= 1+parseInt(nowPos) || num_days == 0) {
 			$('#this_month_now_1_img')[0].src = 'Images/now.gif';
 		} else {
 			$('#this_month_now_1_img')[0].src = 'Images/now_nok.gif';
@@ -116,8 +120,6 @@ function show() {
     	var limitPercentage = n.toFixed(0);
 
     	// 'Today is the $num_days day of your billing month.'
-    	var num_days = (now.getTime()-this_month_start.getTime())/(24*60*60*1000);
-    	num_days = parseInt(num_days.toFixed(0));
     	switch (num_days) {
     	    case 1: num_days = t('1st'); break;
     	    case 2: num_days = t('2nd'); break;
@@ -158,11 +160,11 @@ function show() {
     	} else if (down+up > limitTotal) {
     	    // All is not lost... Buy transfer packages!
             var text = '<span class="nowbw neg">' + tt('used_and_quota', [(down+up).toFixed(0), limitTotal]) + tt('current_extra', overLimit.toFixed(0)) + tt('over_limit_tip', extraPackages.toString()) + '</span>';
-    	} else if (nowBandwidth < 0) {
+    	} else if (nowBandwidth < 0 && num_days != '0th') {
     	    // Not on a good path!
             var text = '<span class="nowbw neg">' + tt('used_and_quota', [(down+up).toFixed(0), limitTotal]) + tt('expected_over_limit_tip', [num_days, endOfMonthBandwidth.toFixed(0)]) + '</span>';
     	} else {
-			var text = tt('accumulated_daily_surplus', [pos, nowBandwidth, (nowPercentage < 1 ? t("download_more") : '')]);
+			var text = tt('accumulated_daily_surplus', ['neg', nowBandwidth, (nowBandwidth > 0 ? t("download_more") : '')]);
     	}
     	$('#this_month_now_bw_usage').html(text);
     });
