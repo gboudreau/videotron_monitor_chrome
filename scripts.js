@@ -6,6 +6,8 @@ var limitTotal = 50;
 var surchargePerGb = 4.50;
 var surchargeLimit = 50;
 var maxTransferPackages = 90;
+var transferPackages = [5, 10, 15, 30, 35, 40, 60, 65, 90];
+var transferPackagesPrices = [5, 10, 15, 12.50, 17.50, 22.50, 25, 30, 37.50];
 
 function reloadPrefs() {
 	color_code_upload = localStorage["colorCodeUpload"] == 'true';
@@ -148,6 +150,7 @@ function show() {
     		    for (var i=0; i<transferPackages.length; i++) {
     		        if ((down+up) - (limitTotal+transferPackages[i]) < 0) {
     		            extraPackages = transferPackages[i];
+    		            extraPackagesPrice = transferPackagesPrices[i];
     		            break;
     		        }
     		    }
@@ -159,7 +162,7 @@ function show() {
             var text = '<span class="nowbw neg">' + tt('used_and_quota', [(down+up).toFixed(0), limitTotal]) + tt('current_extra', overLimit.toFixed(0)) + '</span>';
     	} else if (down+up > limitTotal) {
     	    // All is not lost... Buy transfer packages!
-            var text = '<span class="nowbw neg">' + tt('used_and_quota', [(down+up).toFixed(0), limitTotal]) + tt('current_extra', overLimit.toFixed(0)) + tt('over_limit_tip', extraPackages.toString()) + '</span>';
+            var text = '<span class="nowbw neg">' + tt('used_and_quota', [(down+up).toFixed(0), limitTotal]) + tt('current_extra', overLimit.toFixed(0)) + tt('over_limit_tip', [extraPackages.toString(), extraPackagesPrice.toFixed(2)]) + '</span>';
     	} else if (nowBandwidth < 0 && num_days != '0th') {
     	    // Not on a good path!
             var text = '<span class="nowbw neg">' + tt('used_and_quota', [(down+up).toFixed(0), limitTotal]) + tt('expected_over_limit_tip', [num_days, endOfMonthBandwidth.toFixed(0)]) + '</span>';

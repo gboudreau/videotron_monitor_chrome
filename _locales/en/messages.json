@@ -43,8 +43,8 @@
 
 	"over_limit_tooltip": { "message": "Over-limit! You'll probably pay extra this month." },
 	"over_limit_notif_title": { "message": "Over-limit" },
-	"over_limit_tip": { "message": "To get no extra charges, you'd need to buy another $EXTRAPACKAGES$GB of extra transfer packages.",
-		"placeholders": { "extrapackages": { "content": "$1" } } },
+	"over_limit_tip": { "message": "To get no extra charges, you'd need to buy another $EXTRAPACKAGES$GB ($EXTRAPACKAGESPRICE$$$) of extra transfer packages.",
+	    "placeholders": { "extrapackages": { "content": "$1" }, "extrapackagesprice": { "content": "$2" } } },
 
 	"expected_over_limit_tooltip": { "message": "At this rate, you'll be over limit at the end of the month." },
 	"expected_over_limit_notif_title": { "message": "Expected Over-limit" },

@@ -45,8 +45,8 @@
 
 	"over_limit_tooltip": { "message": "Limite dépassée! Vous devrez probablement payer une surcharge." },
 	"over_limit_notif_title": { "message": "Limite dépassée" },
-	"over_limit_tip": { "message": "Pour ne pas être facturé pour cet extra, vous devrez acheter un $EXTRAPACKAGES$Go de blocs de consommation supplémentaires.",
-		"placeholders": { "extrapackages": { "content": "$1" } } },
+	"over_limit_tip": { "message": "Pour ne pas être facturé pour cet extra, vous devrez acheter un $EXTRAPACKAGES$Go ($EXTRAPACKAGESPRICE$$$) de blocs de consommation supplémentaires.",
+		"placeholders": { "extrapackages": { "content": "$1" }, "extrapackagesprice": { "content": "$2" } } },
 
 	"expected_over_limit_tooltip": { "message": "À ce rythme, vous aurez dépassé votre limite à la fin du mois." },
 	"expected_over_limit_notif_title": { "message": "Limite en voie d'être dépassée" },
