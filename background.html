@@ -141,6 +141,7 @@ function loadUsage2(e, request) {
 
 	down = numberFormatGB(response.downloadedBytes, 'B');
 	up = numberFormatGB(response.uploadedBytes, 'B');
+	limitTotal = parseInt(response.maxCombinedBytes/1024/1024/1024);
 	
 	// Now data
 	var nowPercentage = (now.getTime()-this_month_start.getTime())/(next_month_start.getTime()-this_month_start.getTime());
