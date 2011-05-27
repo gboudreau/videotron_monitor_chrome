@@ -4,18 +4,20 @@
 <script type="text/javascript" src="scripts.js" charset="utf-8"></script>
 <script type="text/javascript">
 
-var xml_request_2 = null;
 var maxTransferPackages = 90;
 var transferPackages = [5, 10, 15, 30, 35, 40, 60, 65, 90];
 var transferPackagesPrices = [5, 10, 15, 12.50, 17.50, 22.50, 25, 30, 37.50];
 
+// For preferences
 var userkey = '';
+var lang = chrome.i18n.getMessage('1st') == '1st' ? 'en' : 'fr';
 
 // From selectedPlan
 var limitTotal = 50;
 var surchargePerGb = 4.50;
 var surchargeLimit = 50;
 
+// For AJAX request & response
 var xml_request = null;
 var last_updated = 0;
 var date_last_updated_data = new Date(); date_last_updated_data.setTime(0);
@@ -23,8 +25,6 @@ var response = null;
 var load_usage_error = null;
 
 var last_notification;
-
-var lang = chrome.i18n.getMessage('1st') == '1st' ? 'en' : 'fr';
 
 $(document).ready(function() {
     reloadPrefs();
@@ -126,7 +126,7 @@ function loadUsage2(e, request) {
     	    surchargePerGb = 4.50;
     	}
 	} else {
-    	if (response.packageName == 'High-Speed Internet' || response.packageName == 'Basic Internet' || response.packageName == 'Internet haute vitesse' || response.packageName == 'Internet haute vitesse') {
+    	if (response.packageName == 'High-Speed Internet' || response.packageName == 'Basic Internet' || response.packageName == 'Internet haute vitesse' || response.packageName == 'Internet Intermédiaire') {
     	    surchargeLimit = 50;
     	    surchargePerGb = 4.50;
     	}
