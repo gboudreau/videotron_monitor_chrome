@@ -1,6 +1,6 @@
 {
 	"name": "__MSG_title__",
-	"version": "0.5.1",
+	"version": "0.5.2",
 	"description": "__MSG_description__",
 	"default_locale": "en",
 	"background_page": "background.html",
