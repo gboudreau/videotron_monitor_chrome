@@ -109,11 +109,11 @@ function loadUsage2(e, request) {
     }
     
 	if (request.response) {
-		var response = request.response;
+		var resp = request.response;
 	} else {
-		var response = request.responseText;
+		var resp = request.responseText;
 	}
-	eval('apiResponse = (' + response + ');');
+	eval('apiResponse = (' + resp + ');');
 	
 	for (var i=0; i<apiResponse.messages.length; i++) {
 	    if (apiResponse.messages[i].severity == 'error') {
@@ -242,7 +242,7 @@ function loadUsage2(e, request) {
 
         var text = tt('used_and_quota', [(down+up).toFixed(0), limitTotal]) + tt('current_extra', overLimit.toFixed(0)) + tt('over_limit_tip', [extraPackages.toString(), extraPackagesPrice.toFixed(2)]);
         current_notification = {title: t('over_limit_notif_title'), text: text};
-	} else if (nowBandwidth < 0) {
+	} else if (nowBandwidth < 0 && num_days != '0th' && num_days != '0e') {
 	    // Not on a good path!
 		var badgeDetails = {text: '!'};
 		var badgeColorDetails = {color: [255, 204, 51, 255]}; // Yellow orangish
@@ -263,13 +263,16 @@ function loadUsage2(e, request) {
 	}
 	
     if (current_notification && (!last_notification || current_notification.title != last_notification.title)) {
-		// Show notification
-		var notification = webkitNotifications.createNotification(
-            'Images/icon-64.png',
-            current_notification.title,
-            current_notification.text
-		);
-		notification.show();
+    	var show_notifications = localStorage["showNotifications"] == 'true' || typeof localStorage["showNotifications"] == 'undefined';
+    	if (show_notifications) {
+    		// Show notification
+    		var notification = webkitNotifications.createNotification(
+                'Images/icon-64.png',
+                current_notification.title,
+                current_notification.text
+    		);
+    		notification.show();
+    	}
     }
 
 	last_notification = current_notification;

@@ -13,8 +13,10 @@
 	"videotron_userkey": { "message": "Videotron User Key*" },
 	"data_transfer_packages": { "message": "Extra data transfer packages bought this month" },
 	"colored_upload": { "message": "Colored Upload" },
+	"show_notifications": { "message": "Show Notifications" },
 	"save": { "message": "Save" },
 	"options_saved": { "message": "Options Saved." },
+	"invalid_user_key": { "message": "Your User Key is invalid.<br/>Your key should contain 16 characters." },
 	"where_to_find_user_key": { "message": "* Don't know your Videotron User Key? You can find it in your Videotron Customer Center, in the <a href='https://www.videotron.com/client/user-management/secur/InitProfile.do?dispatch=initProfile&tab=token&lang=en&caller=videotron-chrome.pommepause.com' target='_blank'>User Key</a> tab of the <em>Your Profile</em> page."},
 
 	"download": { "message": "Download" },

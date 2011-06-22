@@ -15,8 +15,10 @@
 	"videotron_userkey": { "message": "Clé Utilisateur Vidéotron*" },
 	"data_transfer_packages": { "message": "Blocs de consommation supp. achetés ce mois-ci" },
 	"colored_upload": { "message": "Transfert en amont différent sur le graph" },
+	"show_notifications": { "message": "Afficher les notifications" },
 	"save": { "message": "Sauvegarder" },
 	"options_saved": { "message": "Options sauvegardées." },
+	"invalid_user_key": { "message": "Votre Clé Utilisateur est invalide.<br/>Votre clé devrait contenir 16 caractères." },
 	"where_to_find_user_key": { "message": "* Vous ne connaissez pas votre Clé Utilisateur Vidéotron ? Vous pouvez la trouver dans l'Espace Client Vidéotron, dans l'onglet <a href='https://www.videotron.com/client/user-management/secur/InitProfile.do?dispatch=initProfile&tab=token&lang=fr&caller=videotron-chrome.pommepause.com' target='_blank'>Clé Utilisateur</a> de la page <em>Votre Profile</em>."},
 
 	"download": { "message": "Aval" },

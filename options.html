@@ -28,12 +28,20 @@ function restore_options() {
 	    $("#color_code_upload")[0].checked = false;
 	}
 
+    var show_notifications = localStorage['showNotifications'] == 'true' || typeof localStorage["showNotifications"] == 'undefined';
+	if (show_notifications) {
+		$("#show_notifications")[0].checked = true;
+	} else {
+	    $("#show_notifications")[0].checked = false;
+	}
+
 	translate();
 }
 
 function translate() {
 	$('#userkey_intro').html(t("videotron_userkey"));
 	$('#upload_color_intro').html(t("colored_upload"));
+	$('#show_notifications_intro').html(t("show_notifications"));
 	$('#title_image').attr('src', t("title_image"));
 	$('#save').html(t("save"));
 	$('#where_to_find_user_key').html(t("where_to_find_user_key"));
@@ -60,6 +68,15 @@ function translate() {
 		</td>
 		<td>
 		    <input type="checkbox" id="color_code_upload" value="1" />
+		</td>
+	</tr>
+
+	<tr>
+	    <td class="inputText">
+			<span id="show_notifications_intro">Show Notifications</span>:
+		</td>
+		<td>
+		    <input type="checkbox" id="show_notifications" value="1" />
 		</td>
 	</tr>
 </table>
