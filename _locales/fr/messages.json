@@ -1,8 +1,8 @@
 
 
 {
-	"title": { "message": "Concommation Internet Videotron" },
-	"description" : { "message": "Clients Vidéotron: Garder un oeil sur votre consommation Internet." },
+	"title": { "message": "Consommation Internet VL" },
+	"description" : { "message": "Clients de revendeurs Vidéotron: Garder un oeil sur votre consommation Internet." },
 
 	"title_image": { "message": "Images/background_fr.png" },
 	"loading_please_wait": { "message": "Chargement... Un instant SVP. $IMG$",
@@ -12,13 +12,14 @@
 	"oh_noes_error": { "message": "Oh Noes! Une erreur s'est produite.<br/>$DETAILED_ERROR$",
 		"placeholders": { "detailed_error": { "content": "$1" } } },
 
-	"videotron_username": { "message": "Nom d'usager Vidéotron*" },
-	"type_of_access": { "message": "Contrat" },
-	"data_transfer_packages": { "message": "Blocs de consommation supp. achetés ce mois-ci" },
+	"videotron_username": { "message": "Nom d'usager VL*" },
+	"allowed_usage": { "message": "Capacité mensuelle (Go)" },
+	"surcharge": { "message": "Surcharge ($/Go)" },
+	"surcharge_limit": { "message": "Limite de surcharge ($)" },
 	"colored_upload": { "message": "Transfert en amont différent sur le graph" },
 	"save": { "message": "Sauvegarder" },
 	"options_saved": { "message": "Options sauvegardées." },
-	"where_to_find_vl_username": { "message": "* Vous ne connaissez pas votre nom d'usager VL ? Vous pouvez le trouver sur votre facture mensuelle, juste au-dessus des statistiques d'utilisation journalières d'Internet. Vous pouvez aussi le trouver dans l'Espace Client Vidéotron, sur la page <a href='https://www.videotron.com/client/secur/ServicesCourriel.do' target='_blank'>Gérer mes comptes courriels</a>."},
+	"where_to_find_vl_username": { "message": "* Vous ne connaissez pas votre nom d'usager VL ? Vous pouvez le trouver sur votre facture mensuelle, ou contacter le service à la clientèle de votre ISP."},
 
 	"download": { "message": "Aval" },
 	"upload": { "message": "Amont" },
@@ -41,8 +42,6 @@
 		"placeholders": { "bw_used": { "content": "$1" }, "quota": { "content": "$2" } } },
 	"current_extra": { "message": "Surcharge courante: $OVERLIMIT$$$. ",
 		"placeholders": { "overlimit": { "content": "$1" } } },
-	"too_late": { "message": "Même en achetant $MAXTRANSFERPACKAGES$Go de blocs de consommation supplémentaires (le maximum), vous serez quand même facturé une surcharge de $HYPOTETIC_OVERLIMIT$$$.",
-		"placeholders": { "maxtransferpackages": { "content": "$1" }, "hypotetic_overlimit": { "content": "$2" } } },
 
 	"over_limit_tooltip": { "message": "Limite dépassée! Vous devrez probablement payer une surcharge." },
 	"over_limit_notif_title": { "message": "Limite dépassée" },
