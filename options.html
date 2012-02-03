@@ -41,6 +41,12 @@ function restore_options() {
 		$('#surcharge_limit').val(surcharge_limit);
 	}
 
+	var show_notifications = localStorage['showNotifications'] == 'true' || typeof localStorage["showNotifications"] == 'undefined';
+	if (show_notifications) {
+		$("#show_notifications")[0].checked = true;
+	} else {
+		$("#show_notifications")[0].checked = false;
+	}
 	translate();
 }
 
@@ -51,6 +57,7 @@ function translate() {
 	$('#surcharge_intro').html(t("surcharge"));
 	$('#surcharge_limit_intro').html(t("surcharge_limit"));
 	$('#upload_color_intro').html(t("colored_upload"));
+	$('#show_notifications_intro').html(t("show_notifications"));
 	$('#title_image').attr('src', t("title_image"));
 	$('#save').html(t("save"));
 	$('#where_to_find_vl_username').html(t("where_to_find_vl_username"));
@@ -106,6 +113,15 @@ function translate() {
 		</td>
 		<td>
 		    <input type="checkbox" id="color_code_upload" value="1" />
+		</td>
+	</tr>
+
+	<tr>
+	    <td class="inputText">
+			<span id="show_notifications_intro">Show Notifications</span>:
+		</td>
+		<td>
+		    <input type="checkbox" id="show_notifications" value="1" />
 		</td>
 	</tr>
 </table>

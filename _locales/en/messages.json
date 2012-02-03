@@ -15,6 +15,7 @@
 	"surcharge": { "message": "Surcharge ($/GB)" },
 	"surcharge_limit": { "message": "Surcharge Limit ($)" },
 	"colored_upload": { "message": "Colored Upload" },
+	"show_notifications": { "message": "Show Notifications" },
 	"save": { "message": "Save" },
 	"options_saved": { "message": "Options Saved." },
 	"where_to_find_vl_username": { "message": "* Don't know your VL username? You can find it on your monthly invoice, or contact your ISP customer service."},

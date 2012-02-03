@@ -32,6 +32,7 @@ function savePrefs() {
 	localStorage['username'] = $("#username").val() == 'vlxxxxxx' ? '' : $("#username").val();
 	localStorage['lang'] = $("#lang").val();
 	localStorage['colorCodeUpload'] = $("#color_code_upload")[0].checked;
+	localStorage['showNotifications'] = $("#show_notifications")[0].checked;
 	
 	reloadPrefs();
 
@@ -120,7 +121,12 @@ function show() {
 		$('#this_month_now_1').css('left', (29+nowPos)+'px');
 		var nowBandwidth = parseFloat((nowPercentage*(limitTotal)-down-up).toFixed(2));
 
-		if (parseInt($('#this_month_meter_1_end').css('left').replace('px','')) <= 1+parseInt(nowPos)) {
+
+		// 'Today is the $num_days day of your billing month.'
+		var num_days = Math.floor((now.getTime()-this_month_start.getTime())/(24*60*60*1000))+1;
+		num_days = parseInt(num_days.toFixed(0));
+
+		if (parseInt($('#this_month_meter_1_end').css('left').replace('px','')) <= 1+parseInt(nowPos) || num_days == 0) {
 			$('#this_month_now_1_img')[0].src = 'Images/now.gif';
 		} else {
 			$('#this_month_now_1_img')[0].src = 'Images/now_nok.gif';

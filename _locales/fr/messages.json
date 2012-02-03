@@ -17,6 +17,7 @@
 	"surcharge": { "message": "Surcharge ($/Go)" },
 	"surcharge_limit": { "message": "Limite de surcharge ($)" },
 	"colored_upload": { "message": "Transfert en amont différent sur le graph" },
+	"show_notifications": { "message": "Afficher les notifications" },
 	"save": { "message": "Sauvegarder" },
 	"options_saved": { "message": "Options sauvegardées." },
 	"where_to_find_vl_username": { "message": "* Vous ne connaissez pas votre nom d'usager VL ? Vous pouvez le trouver sur votre facture mensuelle, ou contacter le service à la clientèle de votre ISP."},
