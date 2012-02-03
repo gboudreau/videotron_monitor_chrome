@@ -45,21 +45,21 @@ function loadUsage() {
 	var hour = 60*minute;
 	var day = 24*hour;
 
-	// only refresh if it's been more than 6h since the last update, or if the data for the day before yesterday hasn't been downloaded yet.
+	// only refresh if it's been more than 1h since the last update, or if the data for the day before yesterday hasn't been downloaded yet.
 	var lu = new Date(); lu.setTime(last_updated);
 	if (last_updated == 0) {
     	console.log("Chrome restarted, or new install. Updating data...");
 	} else {
-    	console.log("Now: " + now);
-    	console.log("Last Updated: " + last_updated);
-    	if ((now - last_updated) <= 6*hour) {
-        	console.log("Won't update: data is only refreshed every 6 hours.");
+    	console.log("Now: " + n);
+    	console.log("Last Updated: " + lu);
+    	if ((now - last_updated) <= 1*hour) {
+        	console.log("Won't update: data is only refreshed every hour.");
     	}
     	if ((((now - date_last_updated_data.getTime()) > 2*day) && (now - last_updated) > 15*minute)) {
     	    console.log("Oh, oh! Wait... The latest data is more than 2 days old... Let's retry every 15 minutes until it works then.");
     	}
 	}
-	if ((now - last_updated) > 6*hour || (((now - date_last_updated_data.getTime()) > 2*day) && (now - last_updated) > 15*minute)) {
+	if ((now - last_updated) > 1*hour || (((now - date_last_updated_data.getTime()) > 2*day) && (now - last_updated) > 15*minute)) {
 		if (xml_request != null) {
 			xml_request.abort();
 			xml_request = null;
@@ -70,10 +70,12 @@ function loadUsage() {
 		xml_request.open("GET", "http://dataproxy.pommepause.com/videotron_usage-12.php?"+username);
 		xml_request.setRequestHeader("Cache-Control", "no-cache");
 		xml_request.send(null);
-    }
+    } else {
+		chrome.extension.sendRequest({action: 'show'}, function(response) {});
+	}
 
-	// Repeat every 20 minutes; will only refresh with the server every 6h anyway
-	setTimeout(loadUsage, 20*minute);
+	// Repeat every 12 hours in background
+	setTimeout(loadUsage, 12*hour);
 }
 
 function loadUsage2(e, request) {
@@ -81,6 +83,7 @@ function loadUsage2(e, request) {
 	if (!request.responseXML) {
 	    load_usage_error = tt("oh_noes_error", "Response is not XML.");
 		last_updated = 0;
+		chrome.extension.sendRequest({action: 'show'}, function(response) {});
 		return;
 	} else {
 		// Get the top level <usage> element 
@@ -88,6 +91,7 @@ function loadUsage2(e, request) {
 		if (!usage) {
     	    load_usage_error = tt("oh_noes_error", "No usage tag in response.");
 			last_updated = 0;
+			chrome.extension.sendRequest({action: 'show'}, function(response) {});
 			return;
 		}
 
@@ -95,6 +99,7 @@ function loadUsage2(e, request) {
 		if (error) {
     	    load_usage_error = error.firstChild.data;
 			last_updated = 0;
+			chrome.extension.sendRequest({action: 'show'}, function(response) {});
 			return;
 		}
 		
@@ -226,6 +231,8 @@ function loadUsage2(e, request) {
 
 		// set last_updated to the current time to keep track of the last time a request was posted
 		last_updated = (new Date).getTime();
+		
+		chrome.extension.sendRequest({action: 'show'}, function(response) {});
 	}
 }
 
@@ -267,6 +274,9 @@ function onRequest(request, sender, sendResponse) {
 		case 'reloadUsage':
         	last_updated = 0;
         	reloadPrefs();
+        	loadUsage();
+		    return;
+		case 'loadUsage':
         	loadUsage();
 		    return;
 	}
