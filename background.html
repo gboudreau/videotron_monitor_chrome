@@ -194,7 +194,15 @@ function loadUsage2(e, request) {
     		var badgeDetails = {text: '!!'};
             var titleDetails = {title: t("over_limit_too_much_tooltip")};
 
-            var text = tt('used_and_quota', [(down+up).toFixed(0), limitTotal]) + tt('current_extra', overLimit.toFixed(0));
+			var totalDisplay = down+up;
+			if (totalDisplay.toFixed) {
+				totalDisplay = totalDisplay.toFixed(0);
+			}
+			var overLimitDisplay = overLimit;
+			if (overLimit.toFixed) {
+				overLimitDisplay = overLimit.toFixed(0);
+			}
+            var text = tt('used_and_quota', [totalDisplay, limitTotal]) + tt('current_extra', overLimitDisplay);
             current_notification = {title: t('over_limit_too_much_notif_title'), text: text};
 		} else if (nowBandwidth < 0 && num_days != '0th' && num_days != '0e') {
 		    // Not on a good path!
@@ -202,7 +210,15 @@ function loadUsage2(e, request) {
     		var badgeColorDetails = {color: [255, 204, 51, 255]}; // Yellow orangish
             var titleDetails = {title: t('expected_over_limit_tooltip')};
 
-            var text = tt('used_and_quota', [(down+up).toFixed(0), limitTotal]) + tt('expected_over_limit_tip', [num_days, endOfMonthBandwidth.toFixed(0)]);
+			var totalDisplay = down+up;
+			if (totalDisplay.toFixed) {
+				totalDisplay = totalDisplay.toFixed(0);
+			}
+			var endOfMonthBandwidthDisplay = endOfMonthBandwidth;
+			if (endOfMonthBandwidthDisplay.toFixed) {
+				endOfMonthBandwidthDisplay = endOfMonthBandwidthDisplay.toFixed(0);
+			}
+            var text = tt('used_and_quota', [totalDisplay, limitTotal]) + tt('expected_over_limit_tip', [num_days, endOfMonthBandwidthDisplay]);
             current_notification = {title: t('expected_over_limit_notif_title'), text: text};
 		} else {
     		var badgeDetails = {text: '+'};
