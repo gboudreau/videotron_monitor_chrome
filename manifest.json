@@ -1,17 +1,15 @@
 {
+    "manifest_version": 2,
 	"name": "__MSG_title__",
 	"version": "0.5.0",
 	"description": "__MSG_description__",
 	"default_locale": "en",
-	"background_page": "background.html",
+	"background": { "page": "background.html" },
 	"options_page": "options.html",
 	"browser_action": {
 		"default_icon": "Images/icon-16.png",
 		"default_title": "__MSG_title__",
-		"popup": {
-			"height": 200,
-			"path": "popup.html"
-		}
+		"default_popup": "popup.html"
 	},
 	"icons": { "16": "Images/icon-16.png",
 			   "32": "Images/icon-32.png",
