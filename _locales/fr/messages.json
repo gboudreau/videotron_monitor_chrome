@@ -29,7 +29,7 @@
 	"started": { "message": "commencé" },
 	"last_updated": { "message": "Dernière màj" },
 
-	"accumulated_daily_surplus": { "message": "Surplus journalier accumulé: <span class='nowbw $POS_NEG$'>$NOW_BANDWIDTH$ Go</span>.$INSTRUCTIONS$",
+	"accumulated_daily_surplus": { "message": "Surplus journalier accumulé: <span class='nowbw $POS_NEG$'>$NOW_BANDWIDTH$ Go</span>. $INSTRUCTIONS$",
 		"placeholders": { "pos_neg": { "content": "$1" }, "now_bandwidth": { "content": "$2" }, "instructions": { "content": "$3" } } },
 	"download_more": { "message": "Laissez-vous aller!" },
 	"slow_down": { "message": "Ralentissez un peu!" },

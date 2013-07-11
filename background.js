@@ -107,7 +107,8 @@ function loadUsage2(e, request) {
 	} else {
 		var resp = request.responseText;
 	}
-	eval('apiResponse = (' + resp + ');');
+//	eval('apiResponse = (' + resp + ');');
+    apiResponse = JSON.parse(resp);
 	
 	for (var i=0; i<apiResponse.messages.length; i++) {
 	    if (apiResponse.messages[i].severity == 'error') {

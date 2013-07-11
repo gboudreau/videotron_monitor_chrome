@@ -27,7 +27,7 @@
 	"started": { "message": "started" },
 	"last_updated": { "message": "Last updated" },
 	
-	"accumulated_daily_surplus": { "message": "Accumulated daily surplus: <span class='nowbw $POS_NEG$'>$NOW_BANDWIDTH$ GB</span>.$INSTRUCTIONS$",
+	"accumulated_daily_surplus": { "message": "Accumulated daily surplus: <span class='nowbw $POS_NEG$'>$NOW_BANDWIDTH$ GB</span>. $INSTRUCTIONS$",
 		"placeholders": { "pos_neg": { "content": "$1" }, "now_bandwidth": { "content": "$2" }, "instructions": { "content": "$3" } } },
 	"download_more": { "message": "Download more stuff!" },
 	"slow_down": { "message": "Slow down buddy!" },
