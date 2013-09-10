@@ -93,7 +93,7 @@ function show() {
 		$("#last_updated").css('display', "block");
 		$('#needs_config').css('display', 'none');
 
-		$('#this_month_start').html('('+t('started')+' '+dateFormat(currentTransfer['date_from'])+')');
+		$('#this_month_start').html('('+t('started')+' '+dateFormat(new Date(currentTransfer['date_from']))+')');
 		var last_updated_date = new Date(currentTransfer['date_to']);
 		last_updated_date.setDate(last_updated_date.getDate()-1);
 		$('#this_month_end').html(dateFormat(last_updated_date));

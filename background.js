@@ -113,8 +113,8 @@ function loadUsage2(e, request) {
 					var date_to = findChild(date, 'to');
 					if (date_from != null && date_to != null) {
 						transferPeriods[transferPeriods.length] = {
-							date_from: new Date(Date.parse(date_from.firstChild.data)),
-							date_to: new Date(Date.parse(date_to.firstChild.data)),
+							date_from: Date.parse(date_from.firstChild.data),
+							date_to: Date.parse(date_to.firstChild.data),
 							download: down.firstChild.data,
 							download_units: down.attributes.getNamedItem('unit').value,
 							upload: up.firstChild.data,
@@ -122,7 +122,7 @@ function loadUsage2(e, request) {
 						};
 					} else {
 						transferDays[transferDays.length] = {
-							date: new Date(Date.parse(date.firstChild.data)),
+							date: Date.parse(date.firstChild.data),
 							download: down.firstChild.data,
 							download_units: down.attributes.getNamedItem('unit').value,
 							upload: up.firstChild.data,
@@ -135,10 +135,10 @@ function loadUsage2(e, request) {
 		
 		currentTransfer = transferPeriods[0];
 
-		date_last_updated_data = currentTransfer['date_to'];
-		var this_month_start = currentTransfer['date_from'];
+		date_last_updated_data = new Date(currentTransfer['date_to']);
+		var this_month_start = new Date(currentTransfer['date_from']);
 		var next_month_start = new Date(this_month_start); next_month_start.setMonth(next_month_start.getMonth()+1);
-		var now = currentTransfer['date_to'];
+		var now = new Date(currentTransfer['date_to']);
 		now.setDate(now.getDate()+1);
 		if (now.getTime() > next_month_start.getTime()) {
 			now = next_month_start;
