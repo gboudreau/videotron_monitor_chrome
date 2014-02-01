@@ -171,7 +171,7 @@ function loadUsage2(e, request) {
 		}
 		var endOfMonthBandwidth = (down+up) / nowPercentage;
 
-		if (limitPercentage > 100) {
+		if (down+up > limitTotal) {
 		    // 'Current extra charges: $overLimit'
 			var overLimit = ((down+up) - limitTotal) * surchargePerGb;
 			if (overLimit > surchargeLimit) {
