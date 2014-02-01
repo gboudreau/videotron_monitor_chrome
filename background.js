@@ -68,8 +68,8 @@ function loadUsage() {
 		chrome.extension.sendRequest({action: 'show'}, function(response) {});
 	}
 
-	// Repeat every 12 hours in background
-	setTimeout(loadUsage, 12*hour);
+	// Repeat every 4 hours in background
+	setTimeout(loadUsage, 4*hour);
 }
 
 function loadUsage2(e, request) {
