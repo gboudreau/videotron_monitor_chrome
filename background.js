@@ -9,6 +9,7 @@ var surchargeLimit = 25;
 // For AJAX request & response
 var xml_request = null;
 var last_updated = 0;
+var last_up_down = 0;
 var date_last_updated_data = new Date(); date_last_updated_data.setTime(0);
 var currentTransfer = null;
 var load_usage_error = null;
@@ -105,6 +106,7 @@ function loadUsage2(e, request) {
 		// Get all transfer elements subordinate to the usage element
 		for (var item = usage.firstChild; item != null; item = item.nextSibling) {
 			if (item.nodeName == 'transfer') {
+				var date_last_updated = findChild(item, 'last_updated');
 				var date = findChild(item, 'date');
 				var down = findChild(item, 'download');
 				var up = findChild(item, 'upload');
@@ -113,16 +115,9 @@ function loadUsage2(e, request) {
 					var date_to = findChild(date, 'to');
 					if (date_from != null && date_to != null) {
 						transferPeriods[transferPeriods.length] = {
+							date_last_updated: Date.parse(date_last_updated.firstChild.data),
 							date_from: Date.parse(date_from.firstChild.data),
 							date_to: Date.parse(date_to.firstChild.data),
-							download: down.firstChild.data,
-							download_units: down.attributes.getNamedItem('unit').value,
-							upload: up.firstChild.data,
-							upload_units: up.attributes.getNamedItem('unit').value
-						};
-					} else {
-						transferDays[transferDays.length] = {
-							date: Date.parse(date.firstChild.data),
 							download: down.firstChild.data,
 							download_units: down.attributes.getNamedItem('unit').value,
 							upload: up.firstChild.data,
@@ -135,7 +130,17 @@ function loadUsage2(e, request) {
 		
 		currentTransfer = transferPeriods[0];
 
-		date_last_updated_data = new Date(currentTransfer['date_to']);
+		down = numberFormatGB(currentTransfer['download'], currentTransfer['download_units']);
+		up = numberFormatGB(currentTransfer['upload'], currentTransfer['upload_units']);
+
+        if (last_up_down != 0 && last_up_down != up+down) {
+            // Up and/or Down changed; update the 'Last Updated: ...' label in the popup to reflect that.
+            // Otherwise, we will simply show what the API sent up (the last day we have data for).
+            currentTransfer['date_last_updated'] = (new Date).toString();
+        }
+        last_up_down = up+down;
+        
+		date_last_updated_data = new Date(currentTransfer['date_last_updated']);
 		var this_month_start = new Date(currentTransfer['date_from']);
 		var next_month_start = new Date(this_month_start); next_month_start.setMonth(next_month_start.getMonth()+1);
 		var now = new Date(currentTransfer['date_to']);
@@ -143,9 +148,6 @@ function loadUsage2(e, request) {
 		if (now.getTime() > next_month_start.getTime()) {
 			now = next_month_start;
 		}
-
-		down = numberFormatGB(currentTransfer['download'], currentTransfer['download_units']);
-		up = numberFormatGB(currentTransfer['upload'], currentTransfer['upload_units']);
 		
 		// Now data
 		var nowPercentage = (now.getTime()-this_month_start.getTime())/(next_month_start.getTime()-this_month_start.getTime());

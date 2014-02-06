@@ -94,9 +94,8 @@ function show() {
 		$('#needs_config').css('display', 'none');
 
 		$('#this_month_start').html('('+t('started')+' '+dateFormat(new Date(currentTransfer['date_from']))+')');
-		var last_updated_date = new Date(currentTransfer['date_to']);
-		last_updated_date.setDate(last_updated_date.getDate()-1);
-		$('#this_month_end').html(dateFormat(last_updated_date));
+		var last_updated_date = new Date(currentTransfer['date_last_updated']);
+		$('#this_month_end').html(dateTimeFormat(last_updated_date));
 
 		var this_month_start = new Date(currentTransfer['date_from']);
 		var next_month_start = new Date(this_month_start); next_month_start.setMonth(next_month_start.getMonth()+1);
@@ -199,6 +198,13 @@ function dateFormat(d) {
 		d = new Date(d);
 	}
 	return d.getFullYear()+'-'+(d.getMonth()+1 < 10 ? '0'+(d.getMonth()+1) : (d.getMonth()+1))+'-'+(d.getDate() < 10 ? '0'+d.getDate() : d.getDate());
+}
+
+function dateTimeFormat(d) {
+	if (typeof d == 'string') {
+		d = new Date(d);
+	}
+	return d.getFullYear()+'-'+(d.getMonth()+1 < 10 ? '0'+(d.getMonth()+1) : (d.getMonth()+1))+'-'+(d.getDate() < 10 ? '0'+d.getDate() : d.getDate())+' '+(d.getHours() < 10 ? '0'+d.getHours() : d.getHours())+':'+(d.getMinutes() < 10 ? '0'+d.getMinutes() : d.getMinutes());
 }
 
 var units = new Array("B","KB","MB","GB");
