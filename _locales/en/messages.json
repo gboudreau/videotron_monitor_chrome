@@ -27,6 +27,7 @@
 	"this_month": { "message": "This month" },
 	"started": { "message": "started" },
 	"last_updated": { "message": "Last updated" },
+    "delay_warning": { "message": "Careful: data is NOT real time." },
 	
 	"accumulated_daily_surplus": { "message": "Accumulated daily surplus: <span class='nowbw $POS_NEG$'>$NOW_BANDWIDTH$ GB</span>. $INSTRUCTIONS$",
 		"placeholders": { "pos_neg": { "content": "$1" }, "now_bandwidth": { "content": "$2" }, "instructions": { "content": "$3" } } },

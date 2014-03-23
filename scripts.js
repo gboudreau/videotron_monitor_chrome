@@ -140,7 +140,7 @@ function show() {
 
             $('#this_month_start').html('('+t('started')+' '+dateFormat(new Date(currentTransfer['date_from']))+')');
             var last_updated_date = new Date(currentTransfer['date_last_updated']);
-            $('#this_month_end').html(dateTimeFormat(last_updated_date));
+            $('#this_month_end').html(dateTimeFormat(last_updated_date) + '   -   ' + t('delay_warning'));
 
             var this_month_start = new Date(currentTransfer['date_from']);
             var next_month_start = new Date(this_month_start); next_month_start.setMonth(next_month_start.getMonth()+1);

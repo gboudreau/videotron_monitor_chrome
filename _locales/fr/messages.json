@@ -29,6 +29,7 @@
 	"this_month": { "message": "Ce mois-ci" },
 	"started": { "message": "commencé" },
 	"last_updated": { "message": "Dernière màj" },
+    "delay_warning": { "message": "Attention: les données ne sont pas en temps réel." },
 
 	"accumulated_daily_surplus": { "message": "Surplus journalier accumulé: <span class='nowbw $POS_NEG$'>$NOW_BANDWIDTH$ Go</span>. $INSTRUCTIONS$",
 		"placeholders": { "pos_neg": { "content": "$1" }, "now_bandwidth": { "content": "$2" }, "instructions": { "content": "$3" } } },
