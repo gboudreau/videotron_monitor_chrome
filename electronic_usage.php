@@ -113,7 +113,7 @@ if (!string_contains($compteInternet, '@')) {
     // Let's try the extranet URL...
     $url = 'https://extranet.videotron.com/services/secur/extranet/tpia/Usage.do?lang=FRENCH&compteInternet=' . $compteInternet;
     $temp = error_reporting(0);
-    exec("curl --connect-timeout 5 --max-time 10 -Lks --sslv2 '$url'", $html);
+    exec("curl --connect-timeout 5 --max-time 10 -Lks '$url'", $html);
     $html = implode("\n", $html);
     error_reporting($temp);
 
