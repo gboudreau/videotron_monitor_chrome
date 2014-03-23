@@ -1,8 +1,8 @@
 
 
 {
-	"title": { "message": "Consommation Internet VL" },
-	"description" : { "message": "Clients de revendeurs Vidéotron: Garder un oeil sur votre consommation Internet." },
+	"title": { "message": "Consommation Internet Electronic Box" },
+	"description" : { "message": "Clients d'Electronic Box câble et DSL: Garder un oeil sur votre consommation Internet." },
 
 	"title_image": { "message": "Images/background_fr.png" },
 	"loading_please_wait": { "message": "Chargement... Un instant SVP. $IMG$",
@@ -12,15 +12,15 @@
 	"oh_noes_error": { "message": "Oh Noes! Une erreur s'est produite.<br/>$DETAILED_ERROR$",
 		"placeholders": { "detailed_error": { "content": "$1" } } },
 
-	"videotron_username": { "message": "Nom d'usager VL*" },
-	"allowed_usage": { "message": "Capacité mensuelle (Go)" },
-	"surcharge": { "message": "Surcharge ($/Go)" },
-	"surcharge_limit": { "message": "Limite de surcharge ($)" },
-	"colored_upload": { "message": "Transfert en amont différent sur le graph" },
+	"videotron_username": { "message": "Nom d'usager*" },
+    "type_of_access": { "message": "Contrat" },
+    "billing_date": { "message": "Date de facturation" },
+    "data_transfer_packages": { "message": "Blocs de consommation supp. achetés ce mois-ci" },
+	"colored_upload": { "message": "Transfer en amont différent sur le graph" },
 	"show_notifications": { "message": "Afficher les notifications" },
 	"save": { "message": "Sauvegarder" },
 	"options_saved": { "message": "Options sauvegardées." },
-	"where_to_find_vl_username": { "message": "* Vous ne connaissez pas votre nom d'usager VL ? Vous pouvez le trouver sur votre facture mensuelle, ou contacter le service à la clientèle de votre ISP."},
+    "where_to_find_vl_username": { "message": "* Câble: VLxxxxxx; DSL: numero_compte@electronicbox.net<br/>Vous ne connaissez pas votre nom d'usager VL ou votre numéro de compte ? Vous pouvez le trouver sur votre facture mensuelle, ou contacter le <a href='mailto:support@electronicbox.net'>service à la clientèle d'Electronic Box</a>."},
 
 	"download": { "message": "Aval" },
 	"upload": { "message": "Amont" },
@@ -30,7 +30,7 @@
 	"started": { "message": "commencé" },
 	"last_updated": { "message": "Dernière màj" },
 
-	"accumulated_daily_surplus": { "message": "Surplus journalier accumulé: <span class='nowbw $POS_NEG$'>$NOW_BANDWIDTH$ Go</span>.$INSTRUCTIONS$",
+	"accumulated_daily_surplus": { "message": "Surplus journalier accumulé: <span class='nowbw $POS_NEG$'>$NOW_BANDWIDTH$ Go</span>. $INSTRUCTIONS$",
 		"placeholders": { "pos_neg": { "content": "$1" }, "now_bandwidth": { "content": "$2" }, "instructions": { "content": "$3" } } },
 	"download_more": { "message": "Laissez-vous aller!" },
 	"slow_down": { "message": "Ralentissez un peu!" },
@@ -43,6 +43,8 @@
 		"placeholders": { "bw_used": { "content": "$1" }, "quota": { "content": "$2" } } },
 	"current_extra": { "message": "Surcharge courante: $OVERLIMIT$$$. ",
 		"placeholders": { "overlimit": { "content": "$1" } } },
+    "too_late": { "message": "Même en achetant $MAXTRANSFERPACKAGES$Go de blocs de consommation supplémentaires (le maximum), vous serez quand même facturé une surcharge de $HYPOTETIC_OVERLIMIT$$$.",
+        "placeholders": { "maxtransferpackages": { "content": "$1" }, "hypotetic_overlimit": { "content": "$2" } } },
 
 	"over_limit_tooltip": { "message": "Limite dépassée! Vous devrez probablement payer une surcharge." },
 	"over_limit_notif_title": { "message": "Limite dépassée" },

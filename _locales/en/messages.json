@@ -1,6 +1,6 @@
 {
-	"title": { "message": "VL Internet Usage Monitor" },
-	"description" : { "message": "Monitor your monthly internet quota for a Videotron reseller." },
+	"title": { "message": "Electronic Box Internet Usage Monitor" },
+	"description" : { "message": "Monitor your monthly internet quota at Electronic Box." },
 
 	"title_image": { "message": "Images/background_en.png" },
 	"loading_please_wait": { "message": "Loading... Please wait. $IMG$",
@@ -10,15 +10,15 @@
 	"oh_noes_error": { "message": "Oh Noes! There's been an error.<br/>$DETAILED_ERROR$",
 		"placeholders": { "detailed_error": { "content": "$1" } } },
 
-	"videotron_username": { "message": "VL Username*" },
-	"allowed_usage": { "message": "Monthly Quota (GB)" },
-	"surcharge": { "message": "Surcharge ($/GB)" },
-	"surcharge_limit": { "message": "Surcharge Limit ($)" },
+	"videotron_username": { "message": "Username*" },
+    "type_of_access": { "message": "Contract" },
+    "billing_date": { "message": "Billing date" },
+    "data_transfer_packages": { "message": "Extra data transfer packages bought this month" },
 	"colored_upload": { "message": "Colored Upload" },
 	"show_notifications": { "message": "Show Notifications" },
 	"save": { "message": "Save" },
 	"options_saved": { "message": "Options Saved." },
-	"where_to_find_vl_username": { "message": "* Don't know your VL username? You can find it on your monthly invoice, or contact your ISP customer service."},
+	"where_to_find_vl_username": { "message": "* Cable: VLxxxxxx; DSL: account_number@electronicbox.net<br/>Don't know your VL username or account number? You can find it on your monthly invoice, or contact <a href='mailto:support@electronicbox.net'>Electronic Box customer service</a>."},
 
 	"download": { "message": "Download" },
 	"upload": { "message": "Upload" },
@@ -28,7 +28,7 @@
 	"started": { "message": "started" },
 	"last_updated": { "message": "Last updated" },
 	
-	"accumulated_daily_surplus": { "message": "Accumulated daily surplus: <span class='nowbw $POS_NEG$'>$NOW_BANDWIDTH$ GB</span>.$INSTRUCTIONS$",
+	"accumulated_daily_surplus": { "message": "Accumulated daily surplus: <span class='nowbw $POS_NEG$'>$NOW_BANDWIDTH$ GB</span>. $INSTRUCTIONS$",
 		"placeholders": { "pos_neg": { "content": "$1" }, "now_bandwidth": { "content": "$2" }, "instructions": { "content": "$3" } } },
 	"download_more": { "message": "Download more stuff!" },
 	"slow_down": { "message": "Slow down buddy!" },
@@ -41,6 +41,8 @@
 		"placeholders": { "bw_used": { "content": "$1" }, "quota": { "content": "$2" } } },
 	"current_extra": { "message": "Current extra charges: $OVERLIMIT$$$. ",
 		"placeholders": { "overlimit": { "content": "$1" } } },
+    "too_late": { "message": "Even with $MAXTRANSFERPACKAGES$GB of transfer packages (the maximum), you'll still be charged $HYPOTETIC_OVERLIMIT$$$.",
+        "placeholders": { "maxtransferpackages": { "content": "$1" }, "hypotetic_overlimit": { "content": "$2" } } },
 
 	"over_limit_tooltip": { "message": "Over-limit! You'll probably pay extra this month." },
 	"over_limit_notif_title": { "message": "Over-limit" },

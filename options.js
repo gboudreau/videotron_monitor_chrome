@@ -1,3 +1,5 @@
+var plans;
+
 $(document).ready(function() {
 	restore_options();
     $('#save').on('click', savePrefs);
@@ -8,12 +10,17 @@ $(document).ready(function() {
     });
 });
 
-// Restores options to saved value from localStorage.
+// Restores select box state to saved value from localStorage.
 function restore_options() {
     var username = localStorage["username"];
   	if (username && username.length > 0) {
 		$('#username').val(username);
 	}
+
+    var billingDate = localStorage["billing_date"];
+    for (var i=0; i<31; i++) {
+        $('#billing_date')[0].options[i] = new Option(tt_date(i+1), i+1, i == 0, billingDate && billingDate.length > 0 && i+1 == billingDate);
+    }
 
     var color_code_upload = localStorage['colorCodeUpload'] == 'true';
 	if (color_code_upload) {
@@ -22,20 +29,22 @@ function restore_options() {
 	    $("#color_code_upload")[0].checked = false;
 	}
 
-    var allowed_usage = localStorage["allowed_usage"];
-  	if (allowed_usage && allowed_usage > 0) {
-		$('#allowed_usage').val(allowed_usage);
-	}
+    chrome.extension.sendRequest({action : 'getPlans'}, function(response) {
+        plans = response.plans;
+        var transferPackages = response.transferPackages;
+        var selectedPlan = response.selectedPlan;
+        var dataTransferPackagesBought = response.dataTransferPackagesBought;
 
-    var surcharge = localStorage["surcharge"];
-  	if (surcharge && surcharge > 0) {
-		$('#surcharge').val(surcharge);
-	}
+        for (var i=0; i<plans.length; i++) {
+            $('#plan')[0].options[i] = new Option(t(plans[i].name) + ' (' + plans[i].limit_gb + t('GB') + ')', plans[i].id, i == 0, selectedPlan.id == plans[i].id);
+        }
 
-    var surcharge_limit = localStorage["surcharge_limit"];
-  	if (surcharge_limit && surcharge_limit > 0) {
-		$('#surcharge_limit').val(surcharge_limit);
-	}
+        for (var i=0; i<transferPackages.length; i++) {
+            $('#transfer_packages')[0].options[i] = new Option(transferPackages[i] + ' ' + t('GB'), transferPackages[i], i==0, dataTransferPackagesBought == transferPackages[i]);
+        }
+
+        translate();
+    });
 
 	var show_notifications = localStorage['showNotifications'] == 'true' || typeof localStorage["showNotifications"] == 'undefined';
 	if (show_notifications) {
@@ -49,9 +58,9 @@ function restore_options() {
 function translate() {
 	$('#title').html(t("title"));
 	$('#username_intro').html(t("videotron_username"));
-	$('#allowed_usage_intro').html(t("allowed_usage"));
-	$('#surcharge_intro').html(t("surcharge"));
-	$('#surcharge_limit_intro').html(t("surcharge_limit"));
+    $('#billing_date_intro').html(t("billing_date"));
+    $('#plan_intro').html(t("type_of_access"));
+    $('#transfer_packages_intro').html(t("data_transfer_packages"));
 	$('#upload_color_intro').html(t("colored_upload"));
 	$('#show_notifications_intro').html(t("show_notifications"));
 	$('#title_image').attr('src', t("title_image"));

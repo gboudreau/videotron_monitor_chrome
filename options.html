@@ -11,43 +11,43 @@
 <body>
 
 <h1 id="title" style="position: relative; left: 160px">
-	Videotron Resellers - Internet Usage Monitor
+	Internet Usage Monitor
 </h1>
 
 <table cellspacing="0" cellpadding="0">
 	<tr>
 	    <td class="inputText">
-			<span id="username_intro">Vid&eacute;otron Username</span>:
+            <span id="plan_intro">Type of access</span>:
 		</td>
 		<td>
-		    <input type="text" id="username" value="vlxxxxxx" size="10" maxlength="8" />
+            <select id="plan"></select>
 		</td>
 	</tr>
 
-	<tr>
-	    <td class="inputText">
-			<span id="allowed_usage_intro">Data Transfer Allowed (GB)</span>:
-		</td>
-		<td>
-		    <input type="text" id="allowed_usage" value="250" size="10" maxlength="4" />
-		</td>
-	</tr>
+    <tr>
+        <td class="inputText">
+            <span id="username_intro">VL Username</span>:
+        </td>
+        <td>
+            <input type="text" id="username" value="vlxxxxxx" size="30" />
+        </td>
+    </tr>
 
-	<tr>
-	    <td class="inputText">
-			<span id="surcharge_intro">Surcharge ($/GB)</span>:
-		</td>
-		<td>
-		    <input type="text" id="surcharge" value="0.50" size="10" maxlength="5" />
-		</td>
-	</tr>
+    <tr>
+        <td class="inputText">
+            <span id="billing_date_intro">Billing date</span>:
+        </td>
+        <td>
+            <select id="billing_date"></select>
+        </td>
+    </tr>
 
-	<tr>
+    <tr>
 	    <td class="inputText">
-			<span id="surcharge_limit_intro">Surcharge Limit ($)</span>:
+            <span id="transfer_packages_intro">Data transfer packages</span>:
 		</td>
 		<td>
-		    <input type="text" id="surcharge_limit" value="25" size="10" maxlength="6" />
+            <select id="transfer_packages"></select>
 		</td>
 	</tr>
 
