@@ -110,7 +110,6 @@ $compteInternet = $_GET['u'];
 if (!string_contains($compteInternet, '@')) {
     // Cable (Videotron)
 
-    // Let's try the extranet URL...
     $url = 'https://extranet.videotron.com/services/secur/extranet/tpia/Usage.do?lang=FRENCH&compteInternet=' . $compteInternet;
     $temp = error_reporting(0);
     exec("curl --connect-timeout 5 --max-time 10 -Lks '$url'", $html);
@@ -219,23 +218,9 @@ else {
         }
     }
 
-    $billing_date = $_GET['d'];
-    if (empty($billing_date)) {
-        $billing_date = 1;
-    }
-    for ($i=0; $i<31; $i++) {
-        $month = date('m', strtotime("$i days ago"));
-        $day = date('d', strtotime("$i days ago"));
-        $changed_month = isset($last_month) && $last_month != $month;
-        if ($billing_date == $day || ($changed_month && $billing_date > $day)) {
-            $month_start = strtotime("$i days ago");
-            break;
-        }
-        $last_month = $month;
-    }
     $periods = array(
         (object) array(
-            'from' => date('Y-m-d 00:00:00', $month_start),
+            'from' => date('Y-m-01 00:00:00'),
             'to' => date('Y-m-d H:i:s'),
             'download' => $download,
             'upload' => $upload,

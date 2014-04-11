@@ -17,11 +17,6 @@ function restore_options() {
 		$('#username').val(username);
 	}
 
-    var billingDate = localStorage["billing_date"];
-    for (var i=0; i<31; i++) {
-        $('#billing_date')[0].options[i] = new Option(tt_date(i+1), i+1, i == 0, billingDate && billingDate.length > 0 && i+1 == billingDate);
-    }
-
     var color_code_upload = localStorage['colorCodeUpload'] == 'true';
 	if (color_code_upload) {
 		$("#color_code_upload")[0].checked = true;
@@ -58,7 +53,6 @@ function restore_options() {
 function translate() {
 	$('#title').html(t("title"));
 	$('#username_intro').html(t("videotron_username"));
-    $('#billing_date_intro').html(t("billing_date"));
     $('#plan_intro').html(t("type_of_access"));
     $('#transfer_packages_intro').html(t("data_transfer_packages"));
 	$('#upload_color_intro').html(t("colored_upload"));

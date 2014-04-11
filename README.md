@@ -1,10 +1,10 @@
-Videotron Internet Usage Monitor for Google Chrome
-==================================================
+Electronic Box Internet Usage Monitor for Google Chrome
+==============-----====================================
 
 Whats is it?
 ------------
 
-Quite simply, this is a Google Chrome extension that allows Videotron.com customers
+Quite simply, this is a Google Chrome extension that allows ElectronicBox.net customers
 to monitor their monthly bandwidth quota.
 
 Features
@@ -26,18 +26,19 @@ Desktop Notifications will appear if you either are over-limit, or on your way t
 
 How it works?
 -------------
-Every 6 hours, the extension sends an HTTP request to http://dataproxy.pommepause.com/videotron_usage-#.php?vlxxxxxx
-where vlxxxxxx is your Videotron Internet username.
+Every 6 hours, the extension sends an HTTP request to http://dataproxy.pommepause.com/electronic_usage-#.php?u=vlxxxxxx
+where vlxxxxxx is your VL Internet username.
 
-This videotron_usage-#.php server-side script will use the specified username to load the Videotron Internet Usage page for that user, and parse it to extract the usage data, and return that in XML format to the extension, which will in turn parse it, and update it's numbers.
+This electronic_usage-#.php server-side script will use the specified username to load the Videotron Internet Usage page (for cable customers), or Electronic Box Internet Usage page (for DSL customers), and parse it to extract the usage data, and return that in XML format to the extension, which will in turn parse it, and update it's numbers.
 
-The source of that server-side script can be found in videotron_usage.php in this repository.
+The source of that server-side script can be found in electronic_usage.php in this repository.
 
 How to use?
 -----------
 
-Install the extension from the [Google Chrome WebStore](https://chrome.google.com/webstore/detail/fnhepcakkcnkaehfhpagimbbkpelkdha)
+Install the extension from the [Google Chrome WebStore](https://chrome.google.com/webstore/detail/not-yet-published)
 
-Then go in the options (right-click the taskbar button and choose Options), enter your Videotron Internet (VL) username, and choose your Internet plan.
+Then go in the options (right-click the taskbar button and choose Options), enter your username, and choose your Internet plan.
 
-Don't know your VL username? You can find it on your monthly invoice, just above the Internet daily usage numbers. You can also find it in your Videotron Customer Centre, on the [Manage e-mail accounts](https://www.videotron.com/client/Customer-Centre/Internet/Email-services) page.
+Don't know your VL username? You can find it on your monthly invoice.
+Same for your account number needed if you're a DSL customer (username: account_number@electronicbox.net)

@@ -22,7 +22,6 @@ function reloadPrefs() {
         lang = 'en';
         localStorage["lang"] = lang;
     }
-    billingDate = localStorage["billing_date"];
     color_code_upload = localStorage["colorCodeUpload"] == 'true';
 
 }
@@ -31,11 +30,9 @@ function savePrefs() {
     planId = $("#plan")[0].options[$("#plan")[0].selectedIndex].value;
     selectedPlan = plans[$("#plan")[0].selectedIndex];
     dataTransferPackagesBought = parseInt($("#transfer_packages").val());
-    billingDate = $("#billing_date")[0].options[$("#billing_date")[0].selectedIndex].value;
 
 	// save preferences
     localStorage['planId'] = planId;
-    localStorage['billing_date'] = billingDate;
     localStorage['dataTransferPackagesBought'] = dataTransferPackagesBought;
     if (dataTransferPackagesBought > 0) {
         dataTransferPackagesBoughtWhen = new Date();

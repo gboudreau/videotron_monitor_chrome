@@ -9,7 +9,6 @@ var load_plans_error = null;
 var maxTransferPackages = 0;
 
 var username = '';
-var billingDate = 1;
 
 var defaultPlanId = 2; // Default selected plan (High Speed 100GB)
 var planId = defaultPlanId;
@@ -153,7 +152,7 @@ function loadUsage() {
 		xml_request = new XMLHttpRequest();
 		xml_request.onload = function(e) { loadUsage2(e, xml_request); }
 		xml_request.overrideMimeType("text/xml");
-		xml_request.open("GET", "http://dataproxy.pommepause.com/electronic_usage-1.php?u="+username+'&d='+billingDate);
+		xml_request.open("GET", "http://dataproxy.pommepause.com/electronic_usage-1.php?u="+username);
 		xml_request.setRequestHeader("Cache-Control", "no-cache");
 		xml_request.send(null);
     } else {
