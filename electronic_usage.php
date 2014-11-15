@@ -24,11 +24,13 @@ $plans = array(
     (object) array('id' => 17, 'name' => 'DSL FTTN High Speed 10', 'limit_gb' => 100, 'surcharge_per_gb' => 0.50, 'surcharge_limit' => 25),
     (object) array('id' => 18, 'name' => 'DSL FTTN High Speed 10', 'limit_gb' => 250, 'surcharge_per_gb' => 0.50, 'surcharge_limit' => 25),
     (object) array('id' => 19, 'name' => 'DSL FTTN High Speed 10', 'limit_gb' => 500, 'surcharge_per_gb' => 0.50, 'surcharge_limit' => 25),
-    (object) array('id' => 20, 'name' => 'DSL FTTN High Speed 15', 'limit_gb' => 100, 'surcharge_per_gb' => 0.50, 'surcharge_limit' => ''),
+    (object) array('id' => 20, 'name' => 'DSL FTTN High Speed 15', 'limit_gb' => 150, 'surcharge_per_gb' => 0.50, 'surcharge_limit' => ''),
     (object) array('id' => 21, 'name' => 'DSL FTTN High Speed 15', 'limit_gb' => 250, 'surcharge_per_gb' => 0.50, 'surcharge_limit' => ''),
     (object) array('id' => 22, 'name' => 'DSL FTTN High Speed 15', 'limit_gb' => 500, 'surcharge_per_gb' => 0.50, 'surcharge_limit' => ''),
     (object) array('id' => 23, 'name' => 'DSL FTTN High Speed 25', 'limit_gb' => 250, 'surcharge_per_gb' => 0.50, 'surcharge_limit' => ''),
     (object) array('id' => 24, 'name' => 'DSL FTTN High Speed 25', 'limit_gb' => 500, 'surcharge_per_gb' => 0.50, 'surcharge_limit' => ''),
+    (object) array('id' => 25, 'name' => 'DSL FTTN High Speed 50', 'limit_gb' => 250, 'surcharge_per_gb' => 0.50, 'surcharge_limit' => ''),
+    (object) array('id' => 26, 'name' => 'DSL FTTN High Speed 50', 'limit_gb' => 500, 'surcharge_per_gb' => 0.50, 'surcharge_limit' => ''),
 );
 if (isset($_GET['get_plans'])) {
     echo "<plans>
@@ -70,16 +72,16 @@ if (isset($_GET['get_plans'])) {
 echo "<usage>\n";
 
 if (FALSE) {
-	echo "\t<new_version>yes</new_version>\n";
+    echo "\t<new_version>yes</new_version>\n";
 }
 
 function xmlize($string) {
-	return str_replace(array('&', '<', '>'), array('&amp;', '&lt;', '&gt;'), $string);
+    return str_replace(array('&', '<', '>'), array('&amp;', '&lt;', '&gt;'), $string);
 }
 
 function getFormatedDate($dateString) {
-	$date = strtotime($dateString);
-	return str_replace(date('O', $date), date('I', $date) ? 'EDT' : 'EST', date('r', $date));
+    $date = strtotime($dateString);
+    return str_replace(date('O', $date), date('I', $date) ? 'EDT' : 'EST', date('r', $date));
 }
 
 function string_contains($haystack, $needle) {
@@ -87,18 +89,18 @@ function string_contains($haystack, $needle) {
 }
 
 $months_num = array(
-	'janvier' => '01',
-	'février' => '02',
-	'mars' => '03',
-	'avril' => '04',
-	'mai' => '05',
-	'juin' => '06',
-	'juillet' => '07',
-	'août' => '08',
-	'septembre' => '09',
-	'octobre' => '10',
-	'novembre' => '11',
-	'décembre' => '12',
+    'janvier' => '01',
+    'février' => '02',
+    'mars' => '03',
+    'avril' => '04',
+    'mai' => '05',
+    'juin' => '06',
+    'juillet' => '07',
+    'août' => '08',
+    'septembre' => '09',
+    'octobre' => '10',
+    'novembre' => '11',
+    'décembre' => '12',
 );
 
 // Get days in current billing month
@@ -107,141 +109,85 @@ $period_total_upload = $period_total_download = 0;
 
 $compteInternet = $_GET['u'];
 
-if (!string_contains($compteInternet, '@')) {
-    // Cable (Videotron)
-
-    $url = 'https://extranet.videotron.com/services/secur/extranet/tpia/Usage.do?lang=FRENCH&compteInternet=' . $compteInternet;
-    $temp = error_reporting(0);
-    exec("curl --connect-timeout 5 --max-time 10 -Lks '$url'", $html);
-    $html = implode("\n", $html);
-    error_reporting($temp);
-
-    // Get latest period (this month)
-    while (preg_match("@nowrap=\"nowrap\">([0-9\\-]+) au<br />([0-9\\-]+)</@", $html, $regs)) {
-        $html = str_replace($regs[0], '', $html);
-        $periods[] = (object) array('type' => 'period', 'from' => getFormatedDate($regs[1]), 'to' => getFormatedDate($regs[2]));
-        break;
-    }
-
-    // Get all days (60 last days)
-    while (preg_match("@class=\"reg\">(20[0-9\\-]+)</@", $html, $regs)) {
-        $html = str_replace($regs[0], '', $html);
-        $days[] = (object) array('type' => 'day', 'date' => getFormatedDate($regs[1]));
-    }
-
-    // Get all the download and upload data, for periods and days
-    $i = 0;
-    $pos = strpos($html, 'valign="top" class="reg">');
-    while ($pos !== FALSE) {
-        if (preg_match("@valign=\"top\" class=\"reg\">([0-9\\.]+)</@", substr($html, $pos, 50), $regs)) {
-            if ($i++ % 2 == 0 && strpos(substr($html, $pos-20, 20), '<td></td>') === FALSE) {
-                $transfers[] = $regs[1];
-            }
-            $pos += strlen($regs[0]);
-        } else {
-            $pos += 50;
-        }
-        $pos = strpos($html, 'valign="top" class="reg">', $pos);
-    }
-
-    if (!isset($days) || count($days) == 0) {
-        echo "\t<source_url>" . xmlize($url) . "</source_url>\n";
-        echo "\t<error>Vidéotron dit: Nous n'avons pas de données de consommation pour ce compte.</error>\n";
-        echo "</usage>\n";
-        exit(1);
-    }
-
-    $first_period = $periods[0];
-    $first_period->to = getFormatedDate(date('Y-m-d', strtotime($first_period->to)));
-    if (date('Y-m-d', strtotime($first_period->to)) == date('Y-m-d')) {
-        $first_period->to = getFormatedDate(date('Y-m-d H:i:s'));
-    }
-    foreach ($periods as $period) {
-        $period->download = (int) array_shift($transfers);
-        $period->upload = (int) array_shift($transfers);
-        array_shift($transfers);
-    }
-    foreach ($days as $day) {
-        if (!isset($last_updated)) {
-            $last_updated = $day->date;
-        }
-        $day->download = (int) array_shift($transfers);
-        $day->upload = (int) array_shift($transfers);
+if (string_contains($compteInternet, '@')) {
+    // DSL
+    $url = 'http://consodsl.electronicbox.net/index.php?actions=list&lng=en&code=' . urlencode($compteInternet);
+} else {
+    if (strtolower(substr($compteInternet, 0, 2)) == 'vl') {
+        // Cable (Quebec)
+        $url = 'http://consocable.electronicbox.net/index.php?actions=list&lng=en&codeVL=' . urlencode($compteInternet);
+    } else {
+        // Cable (Ontario)
+        $url = 'http://consocableontario.electronicbox.net/index.php?action=list&lng=en&codeACO=' . urlencode($compteInternet);
     }
 }
-else {
-    // DSL
-    $url = 'http://74.116.184.9/daloradius-svn-prod/trunk/bandwitdh_check_v2.php?language=en_US&retry=0&username=' . $compteInternet;
-    $temp = error_reporting(0);
-    exec("curl --connect-timeout 5 --max-time 10 -Ls '$url'", $html);
-    error_reporting($temp);
 
-    $found_tables = 0;
-    $download_section = FALSE;
-    $upload_section = FALSE;
-    $download = 0;
-    $upload = 0;
-    foreach ($html as $line) {
-        if (string_contains($line, "Usager invalide")) {
-            echo "\t<source_url>" . xmlize($url) . "</source_url>\n";
-            echo "\t<error>Electronic Box dit: Usager invalide</error>\n";
-            echo "</usage>\n";
-            exit(1);
-        }
+$temp = error_reporting(0);
+exec("curl --connect-timeout 5 --max-time 10 -Lks --socks5 localhost:9050 '$url'", $html);
+#exec("curl --connect-timeout 5 --max-time 10 -Lks '$url'", $html);
+error_reporting($temp);
 
-        if (string_contains($line, "<table class='bandwidth'>")) {
-            $found_tables++;
-        } else if (string_contains($line, "<th>Download</th>") && $found_tables == 2) {
-            $download_section = TRUE;
-        } else if (string_contains($line, "<th>Upload</th>") && $found_tables == 2) {
-            $upload_section = TRUE;
-        } else if (string_contains($line, "<td>") && $download_section) {
-            if (preg_match('@.*<td>([0-9\.]+) ([MGT])B</td>.*@i', $line, $re)) {
-                $download = $re[1];
-                if ($re[2] == 'G') {
-                    $download *= 1024;
-                } else if ($re[2] == 'T') {
-                    $download *= (1024*1024);
-                }
-            }
-            $download_section = FALSE;
-        } else if (string_contains($line, "<td>") && $upload_section) {
-            if (preg_match('@.*<td>([0-9\.]+) ([MGT])B</td>.*@i', $line, $re)) {
-                $upload = $re[1];
-                if ($re[2] == 'G') {
-                    $upload *= 1024;
-                } else if ($re[2] == 'T') {
-                    $upload *= (1024*1024);
-                }
-            }
+$found = FALSE;
+foreach ($html as $line) {
+    if (string_contains($line, "table_block")) {
+        if (preg_match('@.*<hr width=.50px.>([0-9\.]+) ([MGT]).*<hr width=.50px.>([0-9\.]+) ([MGT]).*<hr width=.50px.>([0-9\.]+) ([MGT]).*@i', $line, $re)) {
+            $found = TRUE;
+            break;
+        } else if (preg_match('@.*Download</b><br>([0-9\.]+) ([MGT]).*Upload</b><br>([0-9\.]+) ([MGT]).*Total</b><br>([0-9\.]+) ([MGT]).*@i', $line, $re)) {
+            $found = TRUE;
             break;
         }
     }
-
-    $periods = array(
-        (object) array(
-            'from' => date('Y-m-01 00:00:00'),
-            'to' => date('Y-m-d H:i:s'),
-            'download' => $download,
-            'upload' => $upload,
-        )
-    );
-    $last_updated = date('Y-m-d H:i:s');
+    if (preg_match('@.*Download[ &nbsp;]*([0-9\.]+) ([MGT]).*Upload[ &nbsp;]*([0-9\.]+) ([MGT]).*Total[ &nbsp;]*([0-9\.]+) ([MGT])@i', $line, $re)) {
+        $found = TRUE;
+        break;
+    }
 }
+
+if (!$found) {
+    echo "\t<source_url>" . xmlize($url) . "</source_url>\n";
+    echo "\t<error>Invalid username, or parsing failed.</error>\n";
+    echo "</usage>\n";
+    exit(1);
+}
+
+$download = $re[1];
+if ($re[2] == 'G') {
+    $download *= 1024;
+} else if ($re[2] == 'T') {
+    $download *= (1024*1024);
+}
+
+$upload = $re[3];
+if ($re[4] == 'G') {
+    $upload *= 1024;
+} else if ($re[4] == 'T') {
+    $upload *= (1024*1024);
+}
+
+$periods = array(
+    (object) array(
+        'from' => date('Y-m-01 00:00:00'),
+        'to' => date('Y-m-d H:i:s'),
+        'download' => $download,
+        'upload' => $upload,
+    )
+);
+$last_updated = date('Y-m-d H:i:s');
 
 echo "\t<source_url>" . xmlize($url) . "</source_url>\n";
 
 // Display transfer data
 foreach ($periods as $data) {
-	echo "\t<transfer>\n";
+    echo "\t<transfer>\n";
     echo "\t\t<last_updated>$last_updated</last_updated>\n";
-	echo "\t\t<date type=\"period\">\n";
-	echo "\t\t\t<from>$data->from</from>\n";
-	echo "\t\t\t<to>$data->to</to>\n";
-	echo "\t\t</date>\n";
-	echo "\t\t<download unit=\"MB\">$data->download</download>\n";
-	echo "\t\t<upload unit=\"MB\">$data->upload</upload>\n";
-	echo "\t</transfer>\n";
+    echo "\t\t<date type=\"period\">\n";
+    echo "\t\t\t<from>$data->from</from>\n";
+    echo "\t\t\t<to>$data->to</to>\n";
+    echo "\t\t</date>\n";
+    echo "\t\t<download unit=\"MB\">$data->download</download>\n";
+    echo "\t\t<upload unit=\"MB\">$data->upload</upload>\n";
+    echo "\t</transfer>\n";
 }
 ?>
 </usage>
