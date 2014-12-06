@@ -340,12 +340,16 @@ function loadUsage2(e, request) {
     		// Show notification
 			var show_notifications = localStorage["showNotifications"] == 'true' || typeof localStorage["showNotifications"] == 'undefined';
 			if (show_notifications) {
-				var notification = webkitNotifications.createNotification(
-	                'Images/icon-64.png',
-	                current_notification.title,
-	                current_notification.text
+				chrome.notifications.create(
+                    "not1",
+                    {
+                        type: 'basic',
+                        iconUrl: 'Images/icon-64.png',
+                        title: current_notification.title,
+                        message: current_notification.text
+                    },
+	                function(){}
 				);
-				notification.show();
 			}
         }
 
