@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
 	"name": "__MSG_title__",
-	"version": "0.6.2",
+	"version": "0.7.1",
 	"description": "__MSG_description__",
 	"default_locale": "en",
 	"background": { "page": "background.html" },
@@ -18,6 +18,9 @@
 	"permissions": [
 		"background",
 		"notifications",
-		"http://dataproxy.pommepause.com/*"
+		"webRequest",
+		"webRequestBlocking",
+		"http://dataproxy.pommepause.com/*",
+        "http://conso.electronicbox.net/*"
 	]
 }

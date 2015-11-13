@@ -28,27 +28,43 @@ var last_up_down = 0;
 var date_last_updated_data = new Date(); date_last_updated_data.setTime(0);
 var currentTransfer = null;
 var load_usage_error = null;
+var developer_message = null;
+var developer_message_on_error = null;
 
 var last_notification;
+var retry_timeout;
 
 $(document).ready(function() {
     reloadPrefs();
+    load_plans_error = tt("oh_noes_error", "Couldn't load available plans from server. Will retry soon...");
+    retry_timeout = 1;
     loadPlans();
 });
 
 function loadPlans() {
     if (plans.length == 0) {
+        developer_message = null;
+        developer_message_on_error = null;
         if (xml_request_2 != null) {
             xml_request_2.abort();
             xml_request_2 = null;
         }
         xml_request_2 = new XMLHttpRequest();
         xml_request_2.onload = function(e) { loadPlans2(e, xml_request_2); }
+        xml_request_2.addEventListener("error", loadPlansFailed);
         xml_request_2.overrideMimeType("text/xml");
         xml_request_2.open("GET", "http://dataproxy.pommepause.com/electronic_usage-1.php?get_plans=1");
         xml_request_2.setRequestHeader("Cache-Control", "no-cache");
         xml_request_2.send(null);
     }
+}
+
+function loadPlansFailed(e) {
+    load_plans_error = tt("oh_noes_error", "Couldn't load available plans from server (Request failed). Will retry in " + retry_timeout + " seconds...");
+    last_updated = 0;
+    setTimeout(loadPlans, retry_timeout*1000);
+    console.log("Will retry in " + retry_timeout + " seconds...");
+    retry_timeout *= 2;
 }
 
 function loadPlans2(e, request) {
@@ -70,8 +86,11 @@ function loadPlans2(e, request) {
     if (e != null) {
         xml_request_2 = null;
         if (!request.responseXML) {
-            load_plans_error = tt("oh_noes_error", "Response is not XML.");
+            load_plans_error = tt("oh_noes_error", "Couldn't load available plans from server (Response is not XML). Will retry in " + retry_timeout + " seconds...");
             last_updated = 0;
+            setTimeout(loadPlans, retry_timeout*1000);
+            console.log("Will retry in " + retry_timeout + " seconds...");
+            retry_timeout *= 2;
             return;
         } else {
             // Get the top level <plans> element
@@ -85,6 +104,12 @@ function loadPlans2(e, request) {
             load_plans_error = null;
 
             for (var item = plansXml.firstChild; item != null; item = item.nextSibling) {
+                if (item.nodeName == 'developer_message') {
+                    developer_message = tt("oh_noes_error", item.firstChild.data);
+                }
+                if (item.nodeName == 'developer_message_on_error') {
+                    developer_message_on_error = tt("oh_noes_error", item.firstChild.data);
+                }
                 if (item.nodeName == 'plan') {
                     var id = item.attributes.getNamedItem('id').value;
                     var name = findChild(item, 'name');
@@ -123,6 +148,14 @@ function loadPlans2(e, request) {
 }
 
 function loadUsage() {
+    if (developer_message) {
+	    load_usage_error = developer_message;
+        console.log("Showing developer_message: " + developer_message);
+    	last_updated = 0;
+    	chrome.extension.sendRequest({action: 'show'}, function(response) {});
+    	return;
+    }
+    
 	var n = new Date();
 	var now = n.getTime();
 
@@ -151,10 +184,12 @@ function loadUsage() {
 		}
 		xml_request = new XMLHttpRequest();
 		xml_request.onload = function(e) { loadUsage2(e, xml_request); }
-		xml_request.overrideMimeType("text/xml");
-		xml_request.open("GET", "http://dataproxy.pommepause.com/electronic_usage-1.php?u="+username);
+        var params = "actions=list&lng=en&code=" + escape(username);
+		//xml_request.open("POST", "http://dataproxy.pommepause.com/electronic_usage-1.html"); // Test HTML
+        xml_request.open("POST", "http://conso.electronicbox.net/index.php");
 		xml_request.setRequestHeader("Cache-Control", "no-cache");
-		xml_request.send(null);
+		xml_request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		xml_request.send(params);
     } else {
 		chrome.extension.sendRequest({action: 'show'}, function(response) {});
 	}
@@ -165,59 +200,67 @@ function loadUsage() {
 
 function loadUsage2(e, request) {
 	xml_request = null;
-	if (!request.responseXML) {
-	    load_usage_error = tt("oh_noes_error", "Response is not XML.");
+	if (!request.response) {
+	    load_usage_error = tt("oh_noes_error", "Couldn't load Internet Usage data (HTML) from ElectronicBox.");
 		last_updated = 0;
 		chrome.extension.sendRequest({action: 'show'}, function(response) {});
 		return;
 	} else {
-		// Get the top level <usage> element 
-		var usage = findChild(request.responseXML, 'usage');
-		if (!usage) {
-    	    load_usage_error = tt("oh_noes_error", "No usage tag in response.");
-			last_updated = 0;
-			chrome.extension.sendRequest({action: 'show'}, function(response) {});
-			return;
-		}
-
-		var error = findChild(usage, 'error');
-		if (error) {
-    	    load_usage_error = error.firstChild.data;
-			last_updated = 0;
-			chrome.extension.sendRequest({action: 'show'}, function(response) {});
-			return;
-		}
-		
 		load_usage_error = null;
 
 		var transferPeriods = new Array;
-		var transferDays = new Array;
 
-		// Get all transfer elements subordinate to the usage element
-		for (var item = usage.firstChild; item != null; item = item.nextSibling) {
-			if (item.nodeName == 'transfer') {
-				var date_last_updated = findChild(item, 'last_updated');
-				var date = findChild(item, 'date');
-				var down = findChild(item, 'download');
-				var up = findChild(item, 'upload');
-				if (date != null && down != null && up != null) {
-					var date_from = findChild(date, 'from');
-					var date_to = findChild(date, 'to');
-					if (date_from != null && date_to != null) {
-						transferPeriods[transferPeriods.length] = {
-							date_last_updated: Date.parse(date_last_updated.firstChild.data),
-							date_from: Date.parse(date_from.firstChild.data),
-							date_to: Date.parse(date_to.firstChild.data),
-							download: down.firstChild.data,
-							download_units: down.attributes.getNamedItem('unit').value,
-							upload: up.firstChild.data,
-							upload_units: up.attributes.getNamedItem('unit').value
-						};
-					}
-				}
-			}
-		}
+        var html = request.response.split("\n");
+        for (var i=0; i<html.length; i++) {
+            var line = html[i];
+            if (line.indexOf("table_block") > -1) {
+                var re = line.match(/.*<hr width=.50px.>([0-9\.]+) ([MGT]).*<hr width=.50px.>([0-9\.]+) ([MGT]).*<hr width=.50px.>([0-9\.]+) ([MGT]).*/i);
+                if (re) {
+                    var download = re[1];
+                    if (re[2] == 'G') {
+                        download *= 1024;
+                    } else if (re[2] == 'T') {
+                        download *= (1024*1024);
+                    }
 
+                    var upload = re[3];
+                    if (re[4] == 'G') {
+                        upload *= 1024;
+                    } else if (re[4] == 'T') {
+                        upload *= (1024*1024);
+                    }
+
+                    var now = new Date();
+                    var firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+                    
+                    transferPeriods[0] = {
+                        date_last_updated: now.toString(),
+                        date_from: firstDay.toString(),
+                        date_to: now.toString(),
+                        download: download,
+                        download_units: 'MB',
+                        upload: upload,
+                        upload_units: 'MB'
+                    };
+                    break;
+                }
+            }
+        }
+        
+    	if (transferPeriods.length == 0) {
+            console.log("Error: table_block not found in HTML: " + request.response);
+            if (developer_message_on_error) {
+        	    load_usage_error = developer_message_on_error;
+                console.log("Showing developer_message_on_error: " + developer_message_on_error);
+            } else {
+                console.log("Showing generic error message.");
+        	    load_usage_error = tt("oh_noes_error", "Couldn't load Internet Usage from ElectronicBox (table_block not found in HTML response).");
+            }
+    		last_updated = 0;
+    		chrome.extension.sendRequest({action: 'show'}, function(response) {});
+    		return;
+    	}
+        
         if (!dataTransferPackagesBoughtWhen || dataTransferPackagesBoughtWhen <= transferPeriods[0]['date_from']) {
             dataTransferPackagesBought = 0;
             localStorage['dataTransferPackagesBought'] = dataTransferPackagesBought;
@@ -420,3 +463,16 @@ function onRequest(request, sender, sendResponse) {
 
 // Wire up the listener.
 chrome.extension.onRequest.addListener(onRequest);
+
+
+// Allow accessing http://conso.electronicbox.net/ withour CORS headers
+var responseListener = function(details){
+	details.responseHeaders.push({"name": "Access-Control-Allow-Origin", "value": "*"});
+	details.responseHeaders.push({"name": "Access-Control-Allow-Methods", "value": "GET, POST, HEAD, OPTIONS"});
+	return {responseHeaders: details.responseHeaders};	
+};
+chrome.runtime.onInstalled.addListener(function(){
+	chrome.webRequest.onHeadersReceived.addListener(responseListener, {
+		urls: ['http://conso.electronicbox.net/']
+	},["blocking", "responseHeaders"]);
+});
