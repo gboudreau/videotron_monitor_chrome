@@ -10,6 +10,10 @@
 	"oh_noes_error": { "message": "Oh Noes! There's been an error.<br/>$DETAILED_ERROR$",
 		"placeholders": { "detailed_error": { "content": "$1" } } },
 
+	"down_for_maintenance": { "message": "ElectronicBox customer portal page is down for maintenance." },
+	"see_details": { "message": "See details" },
+	"error_cant_find_table_block": { "message": "Couldn't load internet usage from ElectronicBox's customer portal (no table_block element found in HTML response)." },
+
 	"videotron_username": { "message": "Username*" },
     "type_of_access": { "message": "Contract" },
     "data_transfer_packages": { "message": "Extra data transfer packages bought this month" },

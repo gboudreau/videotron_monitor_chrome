@@ -12,6 +12,10 @@
 	"oh_noes_error": { "message": "Oh Noes! Une erreur s'est produite.<br/>$DETAILED_ERROR$",
 		"placeholders": { "detailed_error": { "content": "$1" } } },
 
+	"down_for_maintenance": { "message": "Le portail client ElectronicBox est en cours de maintenance" },
+	"see_details": { "message": "Voir les détails" },
+	"error_cant_find_table_block": { "message": "Impossible de charger les données de consommation du portail client ElectronicBox (aucun élément table_block n'a été trouvé dans la réponse HTML)." },
+
 	"videotron_username": { "message": "Nom d'usager*" },
     "type_of_access": { "message": "Contrat" },
     "data_transfer_packages": { "message": "Blocs de consommation supp. achetés ce mois-ci" },
