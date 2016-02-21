@@ -190,7 +190,7 @@ function loadUsage() {
         xml_request.onload = function(e) { loadUsage2(e, xml_request); }
         var params = "actions=list&lng=en&code=" + escape(username);
         //xml_request.open("POST", "http://dataproxy.pommepause.com/electronic_usage-1.html"); // Test HTML
-        xml_request.open("POST", "http://conso.electronicbox.net/index.php");
+        xml_request.open("POST", "http://conso.ebox.ca/index.php");
         xml_request.setRequestHeader("Cache-Control", "no-cache");
         xml_request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
         xml_request.send(params);
@@ -254,7 +254,7 @@ function loadUsage2(e, request) {
         if (transferPeriods.length == 0) {
             if (request.response.indexOf("Down For Maintenance")) {
                 console.log("Error: Down for maintenance");
-                load_usage_error = t("down_for_maintenance") + " [<a href='http://conso.electronicbox.net/' target='_blank'>" + t("see_details") + "</a>]";
+                load_usage_error = t("down_for_maintenance") + " [<a href='http://conso.ebox.ca/' target='_blank'>" + t("see_details") + "</a>]";
             } else if (developer_message_on_error) {
                 console.log("Error: table_block not found in HTML: " + request.response);
                 console.log("Showing developer_message_on_error: " + developer_message_on_error);
@@ -473,7 +473,7 @@ function onRequest(request, sender, sendResponse) {
 chrome.extension.onRequest.addListener(onRequest);
 
 
-// Allow accessing http://conso.electronicbox.net/ withour CORS headers
+// Allow accessing http://conso.ebox.ca/ withour CORS headers
 var responseListener = function(details){
     details.responseHeaders.push({"name": "Access-Control-Allow-Origin", "value": "*"});
     details.responseHeaders.push({"name": "Access-Control-Allow-Methods", "value": "GET, POST, HEAD, OPTIONS"});
@@ -481,6 +481,6 @@ var responseListener = function(details){
 };
 chrome.runtime.onInstalled.addListener(function(){
     chrome.webRequest.onHeadersReceived.addListener(responseListener, {
-        urls: ['http://conso.electronicbox.net/']
+        urls: ['http://conso.ebox.ca/']
     },["blocking", "responseHeaders"]);
 });
