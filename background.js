@@ -53,7 +53,7 @@ function loadPlans() {
         xml_request_2.onload = function(e) { loadPlans2(e, xml_request_2); }
         xml_request_2.addEventListener("error", loadPlansFailed);
         xml_request_2.overrideMimeType("text/xml");
-        xml_request_2.open("GET", "http://dataproxy.pommepause.com/electronic_usage-1.php?get_plans=1");
+        xml_request_2.open("GET", "https://dataproxy.pommepause.com/electronic_usage-1.php?get_plans=1");
         xml_request_2.setRequestHeader("Cache-Control", "no-cache");
         xml_request_2.send(null);
     }
@@ -189,7 +189,7 @@ function loadUsage() {
         xml_request = new XMLHttpRequest();
         xml_request.onload = function(e) { loadUsage2(e, xml_request); }
         var params = "actions=list&lng=en&code=" + escape(username);
-        //xml_request.open("POST", "http://dataproxy.pommepause.com/electronic_usage-1.html"); // Test HTML
+        //xml_request.open("POST", "https://dataproxy.pommepause.com/electronic_usage-1.html"); // Test HTML
         xml_request.open("POST", "http://conso.ebox.ca/index.php");
         xml_request.setRequestHeader("Cache-Control", "no-cache");
         xml_request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
