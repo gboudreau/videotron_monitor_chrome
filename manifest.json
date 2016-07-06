@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
 	"name": "__MSG_title__",
-	"version": "0.7.4",
+	"version": "0.8.0",
 	"description": "__MSG_description__",
 	"default_locale": "en",
 	"background": { "page": "background.html" },
@@ -20,7 +20,6 @@
 		"notifications",
 		"webRequest",
 		"webRequestBlocking",
-		"https://dataproxy.pommepause.com/*",
         "http://conso.ebox.ca/*"
 	]
 }

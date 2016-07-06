@@ -3,11 +3,6 @@ var plans;
 $(document).ready(function() {
 	restore_options();
     $('#save').on('click', savePrefs);
-    $('#username').on('click', function() {
-        if (this.value == 'vlxxxxxx') { 
-            this.value = '';
-        }
-    });
 });
 
 // Restores select box state to saved value from localStorage.
@@ -24,23 +19,6 @@ function restore_options() {
 	    $("#color_code_upload")[0].checked = false;
 	}
 
-    chrome.extension.sendRequest({action : 'getPlans'}, function(response) {
-        plans = response.plans;
-        var transferPackages = response.transferPackages;
-        var selectedPlan = response.selectedPlan;
-        var dataTransferPackagesBought = response.dataTransferPackagesBought;
-
-        for (var i=0; i<plans.length; i++) {
-            $('#plan')[0].options[i] = new Option(t(plans[i].name) + ' (' + plans[i].limit_gb + t('GB') + ')', plans[i].id, i == 0, selectedPlan.id == plans[i].id);
-        }
-
-        for (var i=0; i<transferPackages.length; i++) {
-            $('#transfer_packages')[0].options[i] = new Option(transferPackages[i] + ' ' + t('GB'), transferPackages[i], i==0, dataTransferPackagesBought == transferPackages[i]);
-        }
-
-        translate();
-    });
-
 	var show_notifications = localStorage['showNotifications'] == 'true' || typeof localStorage["showNotifications"] == 'undefined';
 	if (show_notifications) {
 		$("#show_notifications")[0].checked = true;
@@ -53,8 +31,6 @@ function restore_options() {
 function translate() {
 	$('#title').html(t("title"));
 	$('#username_intro').html(t("videotron_username"));
-    $('#plan_intro').html(t("type_of_access"));
-    $('#transfer_packages_intro').html(t("data_transfer_packages"));
 	$('#upload_color_intro').html(t("colored_upload"));
 	$('#show_notifications_intro').html(t("show_notifications"));
 	$('#title_image').attr('src', t("title_image"));

@@ -2,24 +2,14 @@
 var username = '';
 var lang = chrome.i18n.getMessage('1st') == '1st' ? 'en' : 'fr';
 
-var xml_request_2 = null;
-var plans = new Array();
-var transferPackages = new Array();
-var load_plans_error = null;
-var maxTransferPackages = 0;
-
 var username = '';
-
-var defaultPlanId = 2; // Default selected plan (10mbps 125GB)
-var planId = defaultPlanId;
-var selectedPlan = null;
-var dataTransferPackagesBought = 0;
-var dataTransferPackagesBoughtWhen = null;
 
 // From selectedPlan
 var limitTotal = 250;
 var surchargePerGb = 0.50;
-var surchargeLimit = 25;
+var surchargeLimit = 999999;
+var maxTransferPackages = 4*75;
+var transferPackages = [75, 2*75, 3*75, 4*75];
 
 // For AJAX request & response
 var xml_request = null;
@@ -28,134 +18,17 @@ var last_up_down = 0;
 var date_last_updated_data = new Date(); date_last_updated_data.setTime(0);
 var currentTransfer = null;
 var load_usage_error = null;
-var developer_message = null;
-var developer_message_on_error = null;
 
 var last_notification;
 var retry_timeout;
 
 $(document).ready(function() {
     reloadPrefs();
-    load_plans_error = tt("oh_noes_error", "Couldn't load available plans from server. Will retry soon...");
     retry_timeout = 1;
-    loadPlans();
+    loadUsage();
 });
 
-function loadPlans() {
-    if (plans.length == 0) {
-        developer_message = null;
-        developer_message_on_error = null;
-        if (xml_request_2 != null) {
-            xml_request_2.abort();
-            xml_request_2 = null;
-        }
-        xml_request_2 = new XMLHttpRequest();
-        xml_request_2.onload = function(e) { loadPlans2(e, xml_request_2); }
-        xml_request_2.addEventListener("error", loadPlansFailed);
-        xml_request_2.overrideMimeType("text/xml");
-        xml_request_2.open("GET", "https://dataproxy.pommepause.com/electronic_usage-1.php?get_plans=1");
-        xml_request_2.setRequestHeader("Cache-Control", "no-cache");
-        xml_request_2.send(null);
-    }
-}
-
-function loadPlansFailed(e) {
-    load_plans_error = tt("oh_noes_error", "Couldn't load available plans from server (Request failed). Will retry in " + retry_timeout + " seconds...");
-    last_updated = 0;
-    setTimeout(loadPlans, retry_timeout*1000);
-    console.log("Will retry in " + retry_timeout + " seconds...");
-    retry_timeout *= 2;
-}
-
-function loadPlans2(e, request) {
-    if (typeof planId == 'undefined' || planId.length == 0 || planId < 0) {
-        limitTotal = localStorage["limitTotal"];
-        if (!limitTotal || limitTotal.length == 0) {
-            planId = defaultPlanId;
-        } else {
-            limitTotal = parseInt(limitTotal);
-            for (var i=0; i<plans.length; i++) {
-                if (limitTotal == plans[i].limit_gb) {
-                    planId = i;
-                    localStorage['planId'] = planId;
-                    break;
-                }
-            }
-        }
-    }
-    if (e != null) {
-        xml_request_2 = null;
-        if (!request.responseXML) {
-            load_plans_error = tt("oh_noes_error", "Couldn't load available plans from server (Response is not XML). Will retry in " + retry_timeout + " seconds...");
-            last_updated = 0;
-            setTimeout(loadPlans, retry_timeout*1000);
-            console.log("Will retry in " + retry_timeout + " seconds...");
-            retry_timeout *= 2;
-            return;
-        } else {
-            // Get the top level <plans> element
-            var plansXml = findChild(request.responseXML, 'plans');
-            if (!plansXml) {
-                load_plans_error = tt("oh_noes_error", "No 'plans' tag in response.");
-                last_updated = 0;
-                return;
-            }
-
-            load_plans_error = null;
-
-            for (var item = plansXml.firstChild; item != null; item = item.nextSibling) {
-                if (item.nodeName == 'developer_message') {
-                    developer_message = tt("oh_noes_error", item.firstChild.data);
-                }
-                if (item.nodeName == 'developer_message_on_error') {
-                    developer_message_on_error = tt("oh_noes_error", item.firstChild.data);
-                }
-                if (item.nodeName == 'plan') {
-                    var id = item.attributes.getNamedItem('id').value;
-                    var name = findChild(item, 'name');
-                    var limit_gb = findChild(item, 'limit_gb');
-                    var surcharge_per_gb = findChild(item, 'surcharge_per_gb');
-                    var surcharge_limit = findChild(item, 'surcharge_limit');
-                    var p = new Object();
-                    p.id = id;
-                    p.name = name.firstChild.data;
-                    p.limit_gb = limit_gb.firstChild.data;
-                    p.surcharge_per_gb = surcharge_per_gb.firstChild.data;
-                    if (surcharge_limit.firstChild) {
-                        p.surcharge_limit = surcharge_limit.firstChild.data;
-                    } else {
-                        p.surcharge_limit = 999999;
-                    }
-                    if (planId == p.id) {
-                        selectedPlan = p;
-                        limitTotal = parseInt(p.limit_gb);
-
-                    }
-                    plans.push(p);
-                }
-                if (item.nodeName == 'data_transfer_pkg') {
-                    var amount = parseInt(findChild(item, 'amount').firstChild.data);
-                    transferPackages.push(amount);
-                    if (amount > maxTransferPackages) {
-                        maxTransferPackages = amount;
-                    }
-                }
-            }
-
-            loadUsage();
-        }
-    }
-}
-
 function loadUsage() {
-    if (developer_message) {
-        load_usage_error = developer_message;
-        console.log("Showing developer_message: " + developer_message);
-        last_updated = 0;
-        chrome.extension.sendRequest({action: 'show'}, function(response) {});
-        return;
-    }
-    
     var n = new Date();
     var now = n.getTime();
     
@@ -217,6 +90,12 @@ function loadUsage2(e, request) {
         var html = request.response.split("\n");
         for (var i=0; i<html.length; i++) {
             var line = html[i];
+            if (line.indexOf("Plan total:") > -1) {
+                var re = line.match(/.*Plan total:<.b>\s*([0-9\.]+) G.*/i);
+                if (re) {
+                    limitTotal = re[1];
+                }
+            }
             if (line.indexOf("table_block") > -1) {
                 var re = line.match(/.*<hr width=.50px.>([0-9\.]+) ([MGT]).*<hr width=.50px.>([0-9\.]+) ([MGT]).*<hr width=.50px.>([0-9\.]+) ([MGT]).*/i);
                 if (re) {
@@ -255,10 +134,6 @@ function loadUsage2(e, request) {
             if (request.response.indexOf("Down For Maintenance")) {
                 console.log("Error: Down for maintenance");
                 load_usage_error = t("down_for_maintenance") + " [<a href='http://conso.ebox.ca/' target='_blank'>" + t("see_details") + "</a>]";
-            } else if (developer_message_on_error) {
-                console.log("Error: table_block not found in HTML: " + request.response);
-                console.log("Showing developer_message_on_error: " + developer_message_on_error);
-                load_usage_error = developer_message_on_error;
             } else {
                 console.log("Error: table_block not found in HTML: " + request.response);
                 console.log("Showing generic error message.");
@@ -267,11 +142,6 @@ function loadUsage2(e, request) {
             last_updated = 0;
             chrome.extension.sendRequest({action: 'show'}, function(response) {});
             return;
-        }
-        
-        if (!dataTransferPackagesBoughtWhen || dataTransferPackagesBoughtWhen <= transferPeriods[0]['date_from']) {
-            dataTransferPackagesBought = 0;
-            localStorage['dataTransferPackagesBought'] = dataTransferPackagesBought;
         }
         
         currentTransfer = transferPeriods[0];
@@ -297,12 +167,13 @@ function loadUsage2(e, request) {
         
         // Now data
         var nowPercentage = (now.getTime()-this_month_start.getTime())/(next_month_start.getTime()-this_month_start.getTime());
-        var nowBandwidth = parseFloat((nowPercentage*(limitTotal+dataTransferPackagesBought)-down-up).toFixed(2));
-        var n = (down+up) * 100.0 / (limitTotal+dataTransferPackagesBought);
+        var nowBandwidth = parseFloat((nowPercentage*limitTotal-down-up).toFixed(2));
+        var n = (down+up) * 100.0 / limitTotal;
         var limitPercentage = n.toFixed(0);
         
         console.log("Got new usage data from server...");
         console.log("Down+Up = " + (down+up));
+        console.log("Limit = " + limitTotal)
         
         // 'Today is the $num_days day of your billing month.'
         var num_days = Math.floor((now.getTime()-this_month_start.getTime())/(24*60*60*1000))+1;
@@ -312,7 +183,7 @@ function loadUsage2(e, request) {
         
         if (down+up > limitTotal) {
             // 'Current extra charges: $overLimit'
-            var overLimit = ((down+up) - (limitTotal+dataTransferPackagesBought)) * surchargePerGb;
+            var overLimit = ((down+up) - limitTotal) * surchargePerGb;
             if (overLimit > surchargeLimit) {
                 overLimit = surchargeLimit;
             }
@@ -325,7 +196,7 @@ function loadUsage2(e, request) {
                 // 'To get no extra charges, you'd need to buy another $extraPackages of extra transfer packages.'
                 for (var i=0; i<transferPackages.length; i++) {
                     if ((down+up) - (limitTotal+transferPackages[i]) < 0) {
-                        extraPackages = transferPackages[i] - dataTransferPackagesBought;
+                        extraPackages = transferPackages[i];
                         break;
                     }
                 }
@@ -350,11 +221,8 @@ function loadUsage2(e, request) {
                 overLimitDisplay = overLimit.toFixed(0);
             }
             var text = tt('used_and_quota', [totalDisplay, limitTotal]) + tt('current_extra', overLimitDisplay);
-            if (dataTransferPackagesBought < maxTransferPackages) {
-                text += tt('too_late', [maxTransferPackages, hypoteticOverLimit.toFixed(0)]);
-            }
             current_notification = {title: t('over_limit_too_much_notif_title'), text: text};
-        } else if (down+up > limitTotal+dataTransferPackagesBought) {
+        } else if (down+up > limitTotal) {
             // All is not lost... Buy transfer packages!
             var badgeDetails = {text: '!'};
             var titleDetails = {title: t('over_limit_tooltip')};
@@ -445,21 +313,8 @@ function findChild(element, nodeName) {
 */
 function onRequest(request, sender, sendResponse) {
     switch(request.action) {
-        case 'getPlans':
-            sendResponse({plans: plans, selectedPlan: selectedPlan, transferPackages: transferPackages, dataTransferPackagesBought: dataTransferPackagesBought, load_plans_error: load_plans_error});
-            return;
         case 'getUsage':
-            sendResponse({currentTransfer: currentTransfer, dataTransferPackagesBought: dataTransferPackagesBought, load_usage_error: load_usage_error});
-            return;
-        case 'setSelectedPlan':
-            selectedPlan = request.selectedPlan;
-            dataTransferPackagesBought = request.dataTransferPackagesBought;
-            limitTotal = parseInt(selectedPlan.limit_gb);
-            surchargePerGb = parseFloat(selectedPlan.surcharge_per_gb);
-            surchargeLimit = parseFloat(selectedPlan.surcharge_limit);
-            last_updated = 0;
-            reloadPrefs();
-            loadUsage();
+            sendResponse({currentTransfer: currentTransfer, load_usage_error: load_usage_error, limitTotal: limitTotal});
             return;
         case 'loadUsage':
             loadUsage();

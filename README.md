@@ -1,10 +1,10 @@
 Electronic Box Internet Usage Monitor for Google Chrome
-==============-----====================================
+=======================================================
 
 Whats is it?
 ------------
 
-Quite simply, this is a Google Chrome extension that allows ElectronicBox.net customers
+Quite simply, this is a Google Chrome extension that allows ebox.ca customers
 to monitor their monthly bandwidth quota.
 
 Features
@@ -24,21 +24,11 @@ Clicking the toolbar button will display a popup window with more details:
 
 Desktop Notifications will appear if you either are over-limit, or on your way to be over-limit by the end of the month. They will give you some details about your current situation and options.
 
-How it works?
--------------
-Every 6 hours, the extension sends an HTTP request to http://dataproxy.pommepause.com/electronic_usage-#.php?u=vlxxxxxx
-where vlxxxxxx is your VL Internet username.
-
-This electronic_usage-#.php server-side script will use the specified username to load the Videotron Internet Usage page (for cable customers), or Electronic Box Internet Usage page (for DSL customers), and parse it to extract the usage data, and return that in XML format to the extension, which will in turn parse it, and update it's numbers.
-
-The source of that server-side script can be found in electronic_usage.php in this repository.
-
 How to use?
 -----------
 
-Install the extension from the [Google Chrome WebStore](https://chrome.google.com/webstore/detail/not-yet-published)
+Install the extension from the [Google Chrome WebStore](https://chrome.google.com/webstore/detail/electronic-box-internet-u/naddhcamlnfbidmhpfnkfcekjhdjelia)
 
-Then go in the options (right-click the taskbar button and choose Options), enter your username, and choose your Internet plan.
-
-Don't know your VL username? You can find it on your monthly invoice.
-Same for your account number needed if you're a DSL customer (username: account_number@electronicbox.net)
+Then go in the options (right-click the taskbar button and choose Options), enter your username:
+Cable: VLxxxxxx; DSL: account_number@electronicbox.net
+Don't know your VL username or account number? You can find it on your monthly invoice, or contact [Electronic Box customer service](mailto:support@electronicbox.net).

@@ -21,7 +21,7 @@
 	"show_notifications": { "message": "Show Notifications" },
 	"save": { "message": "Save" },
 	"options_saved": { "message": "Options Saved." },
-	"where_to_find_vl_username": { "message": "* Cable: VLxxxxxx; DSL: account_number@electronicbox.net<br/>Don't know your VL username or account number? You can find it on your monthly invoice, or contact <a href='mailto:support@electronicbox.net'>Electronic Box customer service</a>."},
+	"where_to_find_vl_username": { "message": "* Cable: VLxxxxxx; DSL: account_number@electronicbox.net<br/>Don't know your username or account number? You can find it on your monthly invoice, or contact <a href='mailto:support@electronicbox.net'>Electronic Box customer service</a>."},
 
 	"download": { "message": "Download" },
 	"upload": { "message": "Upload" },

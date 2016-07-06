@@ -23,7 +23,7 @@
 	"show_notifications": { "message": "Afficher les notifications" },
 	"save": { "message": "Sauvegarder" },
 	"options_saved": { "message": "Options sauvegardées." },
-    "where_to_find_vl_username": { "message": "* Câble: VLxxxxxx; DSL: numero_compte@electronicbox.net<br/>Vous ne connaissez pas votre nom d'usager VL ou votre numéro de compte ? Vous pouvez le trouver sur votre facture mensuelle, ou contacter le <a href='mailto:support@electronicbox.net'>service à la clientèle d'Electronic Box</a>."},
+    "where_to_find_vl_username": { "message": "* Câble: VLxxxxxx; DSL: numero_compte@electronicbox.net<br/>Vous ne connaissez pas votre nom d'usager ou votre numéro de compte ? Vous pouvez le trouver sur votre facture mensuelle, ou contacter le <a href='mailto:support@electronicbox.net'>service à la clientèle d'Electronic Box</a>."},
 
 	"download": { "message": "Aval" },
 	"upload": { "message": "Amont" },
